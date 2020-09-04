@@ -1,0 +1,20 @@
+{
+  "configVersion": 2,
+  "packages": [
+    {
+      "name": "vector_math",
+      "rootUri": "file:///home/mikeytronix/.pub-cache/hosted/pub.dartlang.org/vector_math-2.0.8",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
+      "name": "box2d_flame",
+      "rootUri": "../",
+      "packageUri": "lib/",
+      "languageVersion": "2.2"
+    }
+  ],
+  "generated": "2020-08-14T09:12:15.446433Z",
+  "generator": "pub",
+  "generatorVersion": "2.9.0"
+}
