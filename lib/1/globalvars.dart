@@ -302,13 +302,8 @@ Future loadprojectcore2(String scenename) async {
   });
 }
 
-
-
-
-
 void expressionmathvariables(Map<String, dynamic> context) {
   var temprandom = math.Random();
-  
   context.addAll({
     "math_random": (int number, [int number2]) {
       if (number2 == null) {

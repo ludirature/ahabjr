@@ -20,8 +20,6 @@ class Xyz {
 Xyz accelerometervalue = Xyz();
 Xyz gyroscopevalue = Xyz();
 
-int objectcount = 0;
-
 class Clsgameobjectitem {
   List<Clscomponent> components = List();
   Clsgameobjectitem({this.components});
@@ -72,8 +70,7 @@ class Clsgameobjectitem {
     List<Clscomponent> components2 = List();
     json.forEach((key, value) {
       if (key == "compgameobject") {
-        components2.add(Clscompgameobject.fromJson(objectcount, value));
-        objectcount++;
+        components2.add(Clscompgameobject.fromJson(value));
       }
       if (key == "comptransform") {
         components2.add(Clscomptransform.fromJson((value)));
@@ -110,18 +107,19 @@ class Clsgameobjectitem {
     return Clsgameobjectitem(components: components2);
   }
 
-  void setsprite(Map tvalue) {
+  void setsprite(
+      Map tvalue) {
     bool isnaa = false;
     for (int a = 0; a < components.length; a++) {
       Clscomponent t = components[a];
       if (t is Clscompsprite) {
-        components.remove(t);
+       components.remove(t);
         components.insert(a, Clscompsprite.fromJson(tvalue));
         isnaa = true;
       }
     }
     if (isnaa == false) {
-      components.add(Clscompsprite.fromJson(tvalue));
+       components.add(Clscompsprite.fromJson(tvalue));
     }
   }
 
@@ -176,7 +174,7 @@ class Clsgameobjectitem {
       if (t is Clscompscript) {
         components.remove(t);
         components.insert(a, Clscompscript.fromJson(tvalue));
-
+        
         isnaa = true;
       }
     }
@@ -464,7 +462,7 @@ class Clsgameobjectitem {
       Clscomponent t = components[a];
       if (t is Clscomptext) {
         t = Clscomptext.fromJson(tvalue);
-
+        
         isnaa = true;
       }
     }
@@ -474,15 +472,16 @@ class Clsgameobjectitem {
   }
 
   void setrigidbody(Map tvalue) {
-    //
+    // 
     bool isnaa = false;
     for (int a = 0; a < components.length; a++) {
       Clscomponent t = components[a];
       if (t is Clscomprigidbody) {
+        
         components.removeAt(a);
 
-        components.insert(a, Clscomprigidbody.fromJson(tvalue));
-
+        components.insert(a,Clscomprigidbody.fromJson(tvalue) );
+      
         isnaa = true;
       }
     }
@@ -511,11 +510,9 @@ class Clscompgameobject extends Clscomponent {
   double vsoffsetx = 0;
   double vsoffsety = 0;
   double vsscale = 0;
-  int theid;
   Clscompgameobject(
       {this.name,
       this.isactive,
-      this.theid,
       this.ischild,
       this.vsoffsetx,
       this.vsoffsety,
@@ -525,37 +522,19 @@ class Clscompgameobject extends Clscomponent {
       "name": this.name,
       "isactive": this.isactive,
       "ischild": this.ischild,
-      "theid": this.theid,
       "vsoffsetx": this.vsoffsetx,
       "vsoffsety": this.vsoffsety,
       "vsscale": this.vsscale
     };
   }
 
-  factory Clscompgameobject.fromJson(
-      int theobjectcount, Map<String, dynamic> json) {
-    String name = json['name'];
-    String isactive = json['isactive'];
-    double vsoffsetx = json['vsoffsetx'];
-    double vsoffsety = json['vsoffsety'];
-    double vsscale = json['vsscale'];
-    String ischild = json['ischild'];
-    int theid;
-    if (json['theid'] == null) {
-      print("asdfasfasdfasdf");
-      theid = theobjectcount;
-    } else {
-      theid = json['theid'];
-    }
-    return Clscompgameobject(
-        name: name,
-        isactive: isactive,
-        vsoffsetx: vsoffsetx,
-        vsoffsety: vsoffsety,
-        vsscale: vsscale,
-        theid: theid,
-        ischild: ischild);
-  }
+  Clscompgameobject.fromJson(Map<String, dynamic> json)
+      : name = json['name'],
+        isactive = json['isactive'],
+        vsoffsetx = json['vsoffsetx'],
+        vsoffsety = json['vsoffsety'],
+        vsscale = json['vsscale'],
+        ischild = json['ischild'];
 }
 
 class Clscomptransform extends Clscomponent {
@@ -2220,8 +2199,6 @@ class Clsactfollowobject extends Clsscriptitem {
   double vsPosY = 0;
   int childindex = -1;
   double vswidth = 150;
-
-
   Clsactfollowobject({this.objectname, this.speed, this.expspeed});
   Map<String, dynamic> toJson() {
     return {
@@ -2415,8 +2392,7 @@ class Clsactsetcamera extends Clsscriptitem {
 class Clsactsetsprite extends Clsscriptitem {
   String image;
   String animation;
-  double opacity = 0;
-  String expopacity = "";
+  double opacity;
 
   double vsPosX = 0;
   double vsPosY = 0;
@@ -2425,14 +2401,12 @@ class Clsactsetsprite extends Clsscriptitem {
   Clsactsetsprite({
     this.image,
     this.animation,
-    this.opacity,
   });
   Map<String, dynamic> toJson() {
     return {
       "image": this.image,
       "animation": this.animation,
-      "opacity": tojsondouble(this.opacity == null ? 1 : this.opacity),
-      "expopacity": this.expopacity,
+      "opacity": this.opacity,
       "vsPosX": this.vsPosX,
       "vsPosY": this.vsPosY,
       "childindex": this.childindex,
@@ -2442,8 +2416,7 @@ class Clsactsetsprite extends Clsscriptitem {
   Clsactsetsprite.fromJson(Map<String, dynamic> json)
       : image = json['image'],
         animation = json['animation'],
-        opacity = fromjsondouble(json['opacity']),
-        expopacity = json['expopacity'],
+        opacity = json['opacity'],
         vsPosX = json['vsPosX'],
         vsPosY = json['vsPosY'],
         childindex = json['childindex'];
@@ -2783,10 +2756,8 @@ class Clscompsound extends Clssoundcomponent {
   void play() {
     if (audioPlayer.state == AudioPlayerState.PLAYING) {
     } else {
-      if (volume > 0) {
-        audioPlayer.play(soundspath + soundpath, isLocal: true);
-        audioPlayer.setVolume(volume);
-      }
+      audioPlayer.play(soundspath + soundpath, isLocal: true);
+      audioPlayer.setVolume(volume);
     }
   }
 

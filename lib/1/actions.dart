@@ -20,7 +20,7 @@ import 'dart:math' as math;
 Actionsinitiator actionsinitiator = Actionsinitiator();
 BComponent bComponent;
 
-Size screensize = Size(0,0);
+Size screensize;
 
 Vector2 touchmovelocation = Vector2(0, 0);
 Vector2 touchdownlocation = Vector2(0, 0);
@@ -45,8 +45,8 @@ Cameraproperties currentcamerasettings;
 
 class MyContactListener extends ContactListener {
   //Box2d Object collision detection listener
-  // List<Gameobject> bodies = List();
-  MyContactListener();
+  List<Gameobject> bodies = List();
+  MyContactListener(this.bodies);
   // Map<String, dynamic> contactlist = Map();
   List<Contact> contactlists2 = List();
   @override
@@ -127,14 +127,15 @@ class Actionsinitiator {
 
   BuildContext context;
 
-  // List<Gameobject> bodies = List();
+  List<Gameobject> bodies = List();
   bool isended = false;
 
   double camerasmoothx = double.nan;
   double camerasmoothy = double.nan;
   double camerasmoothscale = double.nan;
 
-  Actionsinitiator({this.box2d, this.context, this.world, this.viewport}) {}
+  Actionsinitiator(
+      {this.box2d, this.context, this.world, this.bodies, this.viewport}) {}
 
   void destroytimers() {
     for (int a = 0; a < gameobjectitemscore.length; a++) {
@@ -154,51 +155,41 @@ class Actionsinitiator {
     }
   }
 
-  void getchildactions(int scriptindex, String curobjectname, Clsscriptitem si,
-      int goindex, Gameobject thegameobject) {
+  void getchildactions(String curobjectname, Clsscriptitem si, int goindex,
+      Gameobject thegameobject) {
     if (isended) {
       return;
     }
 
     int childindex = si.getchildindex();
-    // print(scriptindex);
-    initiateactions4(scriptindex,
-        t: si, goindex: goindex, thegameobject: thegameobject);
+    initiateactions4(t: si, goindex: goindex, thegameobject: thegameobject);
 
     if (si is Clsactiscollidingwith) {
-      checkiscollidingwith(scriptindex, curobjectname, si.objectname, si,
-          goindex, thegameobject);
+      checkiscollidingwith(
+          curobjectname, si.objectname, si, goindex, thegameobject);
     } else if (si is Clsactiscardinal) {
-      checkiscardinal(scriptindex, curobjectname, si, goindex, thegameobject);
+      checkiscardinal(curobjectname, si, goindex, thegameobject);
     } else if (si is Clsactbooleanexpression) {
-      checkbooleanexpression(
-          scriptindex, curobjectname, si, goindex, thegameobject);
+      checkbooleanexpression(curobjectname, si, goindex, thegameobject);
     } else if (si is Clsacttimerdelayed) {
-      checkistimerdelayed(
-          scriptindex, curobjectname, si, goindex, thegameobject);
+      checkistimerdelayed(curobjectname, si, goindex, thegameobject);
     } else if (si is Clsacttimerperiodic) {
-      checkistimerperiodic(
-          scriptindex, curobjectname, si, goindex, thegameobject);
+      checkistimerperiodic(curobjectname, si, goindex, thegameobject);
     } else if (si is Clsactsavevalue) {
-      checkissavevalue(scriptindex, curobjectname, si, goindex, thegameobject);
+      checkissavevalue(curobjectname, si, goindex, thegameobject);
     } else if (si is Clsactloadvalue) {
-      checkisloadvalue(scriptindex, curobjectname, si, goindex, thegameobject);
+      checkisloadvalue(curobjectname, si, goindex, thegameobject);
     }
     if (childindex != -1) {
       Clsscriptitem si2 =
           gameobjectitemscore[goindex].getscript().components[childindex];
 
-      getchildactions(childindex, curobjectname, si2, goindex, thegameobject);
+      getchildactions(curobjectname, si2, goindex, thegameobject);
     }
   }
 
-  void checkiscollidingwith(
-      int scriptindex,
-      String curobjectname,
-      String objectname,
-      Clsscriptitem si,
-      int goindex,
-      Gameobject thegameobject) {
+  void checkiscollidingwith(String curobjectname, String objectname,
+      Clsscriptitem si, int goindex, Gameobject thegameobject) {
     int trueindex = si.gettrueindex();
     int falseindex = si.getfalseindex();
 
@@ -211,18 +202,18 @@ class Actionsinitiator {
       Clsscriptitem si2 =
           gameobjectitemscore[goindex].getscript().components[trueindex];
 
-      getchildactions(scriptindex, curobjectname, si2, goindex, thegameobject);
+      getchildactions(curobjectname, si2, goindex, thegameobject);
     }
     if (falseindex != -1 && !iscollisiontrue) {
       Clsscriptitem si2 =
           gameobjectitemscore[goindex].getscript().components[falseindex];
 
-      getchildactions(scriptindex, curobjectname, si2, goindex, thegameobject);
+      getchildactions(curobjectname, si2, goindex, thegameobject);
     }
   }
 
-  void checkiscardinal(int scriptindex, String curobjectname, Clsscriptitem si,
-      int goindex, Gameobject thegameobject) {
+  void checkiscardinal(String curobjectname, Clsscriptitem si, int goindex,
+      Gameobject thegameobject) {
     int trueindex = si.gettrueindex();
     int falseindex = si.getfalseindex();
 
@@ -247,18 +238,18 @@ class Actionsinitiator {
       Clsscriptitem si2 =
           gameobjectitemscore[goindex].getscript().components[trueindex];
 
-      getchildactions(scriptindex, curobjectname, si2, goindex, thegameobject);
+      getchildactions(curobjectname, si2, goindex, thegameobject);
     }
     if (falseindex != -1 && !iscardinal) {
       Clsscriptitem si2 =
           gameobjectitemscore[goindex].getscript().components[falseindex];
 
-      getchildactions(scriptindex, curobjectname, si2, goindex, thegameobject);
+      getchildactions(curobjectname, si2, goindex, thegameobject);
     }
   }
 
-  void checkbooleanexpression(int scriptindex, String curobjectname,
-      Clsscriptitem si, int goindex, Gameobject thegameobject) {
+  void checkbooleanexpression(String curobjectname, Clsscriptitem si,
+      int goindex, Gameobject thegameobject) {
     int trueindex = si.gettrueindex();
     int falseindex = si.getfalseindex();
 
@@ -273,18 +264,18 @@ class Actionsinitiator {
       Clsscriptitem si2 =
           gameobjectitemscore[goindex].getscript().components[trueindex];
 
-      getchildactions(scriptindex, curobjectname, si2, goindex, thegameobject);
+      getchildactions(curobjectname, si2, goindex, thegameobject);
     }
     if (falseindex != -1 && !isexpressiontrue) {
       Clsscriptitem si2 =
           gameobjectitemscore[goindex].getscript().components[falseindex];
 
-      getchildactions(scriptindex, curobjectname, si2, goindex, thegameobject);
+      getchildactions(curobjectname, si2, goindex, thegameobject);
     }
   }
 
-  void checkistimerdelayed(int scriptindex, String curobjectname,
-      Clsscriptitem si, int goindex, Gameobject thegameobject) {
+  void checkistimerdelayed(String curobjectname, Clsscriptitem si, int goindex,
+      Gameobject thegameobject) {
     int asyncindex = si.getasyncindex();
     if (asyncindex != -1) {
       Clsscriptitem si2 =
@@ -293,16 +284,15 @@ class Actionsinitiator {
       if (si is Clsacttimerdelayed) {
         // if (bodyindex < bodies.length) {
         si.start(() {
-          getchildactions(
-              scriptindex, curobjectname, si2, goindex, thegameobject);
+          getchildactions(curobjectname, si2, goindex, thegameobject);
         });
         // }
       }
     }
   }
 
-  void checkistimerperiodic(int scriptindex, String curobjectname,
-      Clsscriptitem si, int goindex, Gameobject thegameobject) {
+  void checkistimerperiodic(String curobjectname, Clsscriptitem si, int goindex,
+      Gameobject thegameobject) {
     int asyncindex = si.getasyncindex();
     if (asyncindex != -1) {
       Clsscriptitem si2 =
@@ -310,15 +300,14 @@ class Actionsinitiator {
 
       if (si is Clsacttimerperiodic) {
         si.start(() {
-          getchildactions(
-              scriptindex, curobjectname, si2, goindex, thegameobject);
+          getchildactions(curobjectname, si2, goindex, thegameobject);
         });
       }
     }
   }
 
-  void checkissavevalue(int scriptindex, String curobjectname, Clsscriptitem si,
-      int goindex, Gameobject thegameobject) {
+  void checkissavevalue(String curobjectname, Clsscriptitem si, int goindex,
+      Gameobject thegameobject) {
     int asyncindex = si.getasyncindex();
 
     if (si is Clsactsavevalue) {
@@ -353,8 +342,7 @@ class Actionsinitiator {
               Clsscriptitem si2 = gameobjectitemscore[goindex]
                   .getscript()
                   .components[asyncindex];
-              getchildactions(
-                  scriptindex, curobjectname, si2, goindex, thegameobject);
+              getchildactions(curobjectname, si2, goindex, thegameobject);
             }
           });
         }
@@ -362,8 +350,8 @@ class Actionsinitiator {
     }
   }
 
-  void checkisloadvalue(int scriptindex, String curobjectname, Clsscriptitem si,
-      int goindex, Gameobject thegameobject) {
+  void checkisloadvalue(String curobjectname, Clsscriptitem si, int goindex,
+      Gameobject thegameobject) {
     int asyncindex = si.getasyncindex();
 
     if (si is Clsactloadvalue) {
@@ -425,8 +413,7 @@ class Actionsinitiator {
               Clsscriptitem si2 = gameobjectitemscore[goindex]
                   .getscript()
                   .components[asyncindex];
-              getchildactions(
-                  scriptindex, curobjectname, si2, goindex, thegameobject);
+              getchildactions(curobjectname, si2, goindex, thegameobject);
             }
           });
         }
@@ -512,136 +499,68 @@ class Actionsinitiator {
       Gameobject thegameobject,
       Eevents eevents,
       String variablename}) {
-    if (isended) return;
     String curobjectname = gameobjectitemscore[goindex].getgameobject().name;
-
-    if (eevents == Eevents.step) {
-      for (int b = 0; b < thegameobject.stepindexs.length; b++) {
-        Clsscriptitem si = gameobjectitemscore[goindex]
-            .getscript()
-            .components[thegameobject.stepindexs[b]];
-        // print(si);
-        getchildactions(thegameobject.stepindexs[b], curobjectname, si, goindex,
-            thegameobject);
-      }
-      return;
-    }
     for (int b = 0;
         b < gameobjectitemscore[goindex].getscript().components.length;
         b++) {
-      // print(" initiate  $b");
       Clsscriptitem si = gameobjectitemscore[goindex].getscript().components[b];
       if (si is Clscompscreenontouch) {
         if (si.touchevent == "Touch Down" &&
             eevents == Eevents.screentouchdown &&
             checkscreentouchlocation(si)) {
-          getchildactions(b, curobjectname, si, goindex, thegameobject);
+          getchildactions(curobjectname, si, goindex, thegameobject);
         }
         if (si.touchevent == "Touch Down" &&
             eevents == Eevents.screentouchdowncontinuous &&
             checkscreentouchlocation(si)) {
           if (thegameobject.istouchdown == true && si.continuous == "true") {
-            getchildactions(b, curobjectname, si, goindex, thegameobject);
+            getchildactions(curobjectname, si, goindex, thegameobject);
           }
         }
         if (si.touchevent == "Touch Up" &&
             eevents == Eevents.screentouchup &&
             checkscreentouchlocation(si)) {
-          getchildactions(b, curobjectname, si, goindex, thegameobject);
+          getchildactions(curobjectname, si, goindex, thegameobject);
         }
         if (si.touchevent == "Touch Move" &&
             eevents == Eevents.screentouchmove &&
             checkscreentouchlocation(si)) {
-          getchildactions(b, curobjectname, si, goindex, thegameobject);
+          getchildactions(curobjectname, si, goindex, thegameobject);
         }
-      }
-      // else if (si is Clscompstep) {
-      //   if (eevents == Eevents.step) {
-      //     getchildactions(curobjectname, si, goindex, thegameobject);
-      //   }
-      // }
-
-      else if (si is Clscomponobjectloaded) {
+      } else if (si is Clscompstep) {
+        if (eevents == Eevents.step) {
+          getchildactions(curobjectname, si, goindex, thegameobject);
+        }
+      } else if (si is Clscomponobjectloaded) {
         if (eevents == Eevents.onobjectloaded) {
-          getchildactions(b, curobjectname, si, goindex, thegameobject);
+          getchildactions(curobjectname, si, goindex, thegameobject);
         }
       } else if (si is Clscompobjectontouch) {
         if (si.touchevent == "Touch Down" &&
             eevents == Eevents.objecttouchdown) {
-          getchildactions(b, curobjectname, si, goindex, thegameobject);
+          getchildactions(curobjectname, si, goindex, thegameobject);
         }
         if (si.touchevent == "Touch Up" && eevents == Eevents.objecttouchup) {
-          getchildactions(b, curobjectname, si, goindex, thegameobject);
+          getchildactions(curobjectname, si, goindex, thegameobject);
         }
         if (si.touchevent == "Touch Move" &&
             eevents == Eevents.objecttouchmove) {
-          getchildactions(b, curobjectname, si, goindex, thegameobject);
+          getchildactions(curobjectname, si, goindex, thegameobject);
         }
       } else if (si is Clscomponjoystick) {
         if (si.joystickevent == "Direction Changed" &&
             eevents == Eevents.onjoystickdirectionchanged) {
           if (si.variable == variablename) {
-            getchildactions(b, curobjectname, si, goindex, thegameobject);
+            getchildactions(curobjectname, si, goindex, thegameobject);
           }
         }
       }
     }
   }
 
-  void expressionobjectproperties(Map<String, dynamic> context) {
-    context.addAll({
-      "obj_position_x": (int objectid) {
-        return bComponent.bodies[objectid].body.position.x;
-      }
-    });
-    context.addAll({
-      "obj_position_y": (int objectid) {
-        return bComponent.bodies[objectid].body.position.y;
-      }
-    });
-    context.addAll({
-      "obj_angle": (int objectid) {
-        return bComponent.bodies[objectid].body.getAngle();
-      }
-    });
-    context.addAll({
-      "obj_scale_x": (int objectid) {
-        return bComponent.bodies[objectid].transformprop.sx;
-      }
-    });
-    context.addAll({
-      "obj_scale_y": (int objectid) {
-        return bComponent.bodies[objectid].transformprop.sy;
-      }
-    });
-    context.addAll({
-      "obj_velocity_x": (int objectid) {
-        return bComponent.bodies[objectid].body.linearVelocity.x;
-      }
-    });
-    context.addAll({
-      "obj_velocity_y": (int objectid) {
-        return bComponent.bodies[objectid].body.linearVelocity.y;
-      }
-    });
-    context.addAll({
-      "obj_velocity_angle": (int objectid) {
-        return bComponent.bodies[objectid].body.angularVelocity;
-      }
-    });
-    context.addAll({
-      "obj_sprite_opacity": (int objectid) {
-        if (bComponent.bodies[objectid].compsprite.opacity != null) {
-          return bComponent.bodies[objectid].compsprite.opacity;
-        }
-        return 1;
-      }
-    });
-  }
-
   dynamic evaluateexpression(String expressions, Gameobject thegameobject) {
     Expression expression = Expression.parse(expressions.replaceAll(" ", ""));
-    // print(expressions);
+  // print(expressions);
     Map<String, dynamic> context = {
       "position_x": thegameobject.body.position.x,
       "position_y": thegameobject.body.position.y,
@@ -651,7 +570,7 @@ class Actionsinitiator {
       "velocity_x": thegameobject.body.linearVelocity.x,
       "velocity_y": thegameobject.body.linearVelocity.y,
       "velocity_angle": thegameobject.body.angularVelocity,
-      "object_id": thegameobject.thegameobject.theid,
+     
       "camera_width": getprojectsettingscore().appversion >= 11
           ? screensize.width
           : viewport.size.width,
@@ -675,12 +594,11 @@ class Actionsinitiator {
       "gyroscope_z": gyroscopevalue.z,
       "deltatime": deltatime
     };
-    if (thegameobject.compsprite != null) {
+    if(thegameobject.compsprite!=null){
       context.addAll({"sprite_opacity": thegameobject.compsprite.opacity});
     }
 
-    expressionobjectproperties(context);
-
+  
     for (int a2 = 0; a2 < globalvariablescore.length; a2++) {
       Clsvariable t2 = globalvariablescore[a2];
       if (t2 is Clsvariablenumber) {
@@ -700,9 +618,7 @@ class Actionsinitiator {
       }
     }
 
-    // print(uijoystickvalues.length);
     uijoystickvalues.forEach((key, value) {
-      
       context.addAll({key + "_angle": value["angle"]});
       context.addAll({key + "_distance": value["distance"]});
       context.addAll({key + "_value_x": value["valx"]});
@@ -721,13 +637,11 @@ class Actionsinitiator {
     }
   }
 
-  void initiateactions4(int scriptindex,
+  void initiateactions4(
       {Clsscriptitem t, Gameobject thegameobject, int goindex}) {
     if (t is Clsactloadscene) {
       if (t.scenename == null) return;
-
       actionsinitiator.isended = true;
-      bComponent.tofollow = null;
       for (int a1 = 0; a1 < soundslistscore.length; a1++) {
         Clscompsound t = soundslistscore[a1];
         t.stop();
@@ -735,25 +649,15 @@ class Actionsinitiator {
       destroytimers();
 
       loadprojectcore2(t.scenename).then((onValue) {
-        for (int thea = bComponent.bodies.length-1; thea >= 0; thea--) {
-          Gameobject thet = bComponent.bodies.values.elementAt(thea);
-          thet.destroyobject(thet, "bcomponent",thet.bodyindex);
-          // bComponent.bodies.remove(thet);
-          // bComponent.bodies.remove(thet.thegameobject.theid);
-
-        }
-
-        // bComponent.bodies.forEach((key, val) {
-
-        // });
-
+        bComponent.bodies.forEach((val) {
+          bComponent.remove(val);
+        });
         bComponent.bodies.clear();
-        // bodies.clear();
+        bodies.clear();
 
         bComponent.initializeWorld();
-
-        refreshuicomponents();
         actionsinitiator.isended = false;
+        refreshuicomponents();
       });
 
       return;
@@ -959,27 +863,9 @@ class Actionsinitiator {
       String image = t.image;
       String animation = t.animation;
       double opacity = t.opacity;
-
-      if (opacity == null) {
-        opacity = 1;
+      if (opacity != null) {
+        thegameobject.compsprite.opacity = opacity;
       }
-
-      // print(opacity);
-      if (opacity != null || !opacity.isNaN || t.expopacity == null) {
-        if (t.expopacity == null) {
-          if (!opacity.isNaN) {
-            thegameobject.compsprite.opacity = opacity;
-          }
-        } else {
-          double r = evaluateexpression(t.expopacity, thegameobject);
-
-          thegameobject.compsprite.opacity = r;
-        }
-      }
-
-      // if (opacity != null) {
-      //   thegameobject.compsprite.opacity = opacity;
-      // }
       if (image != null) {
         thegameobject.compsprite.imagepath = image;
         thegameobject.compsprite.spriteanimation = null;
@@ -994,9 +880,7 @@ class Actionsinitiator {
     } else if (t is Clsactdestroyobject) {
       // if (a < bodies.length) {
 
-      thegameobject.destroyobject(thegameobject, "bcomponent",thegameobject.bodyindex);
-
-      // return;
+      thegameobject.destroyobject(thegameobject, "bcomponent");
       // bodies[a].destroyobject("bodies");
 
       // if (a >= gameobjectitemscore.length) {
@@ -1006,33 +890,18 @@ class Actionsinitiator {
       // }
     } else if (t is Clsactcreateobject) {
       //  print("asdfasdfasdf");
-      // bComponent.isloadedna = false;
-      // bComponent.toaddtouchdown.clear();
       for (int indcreate = 0;
           indcreate < gameobjectitemscore.length;
           indcreate++) {
         if (t.objectname ==
             gameobjectitemscore[indcreate].getgameobject().name) {
-               int newid = objectcounters;
           Gameobject temp = Gameobject(
-              box2d, context, indcreate, objectcounters, t.objectname,
-              isdebug: bComponent.bodies[indcreate]==null?false:bComponent.bodies[indcreate].isdebug,naayid: newid);
-
-          // print("asdf");
+              box2d, context, indcreate, bodies.length, t.objectname,
+              isdebug: bodies[indcreate].isdebug);
 //  print(temp.objectname);
-          // bodies.add(temp);
-          // print(bComponent.generateobjectid());
-         
-          // print(newid);
-          // temp.thegameobject.theid = newid;
-          bComponent.bodies.addAll({newid: temp});
-          // bComponent.bodies.putIfAbsent(newid, ()=>temp);
-          // bComponent.toaddtouchdown.addAll({newid: temp});
-
-          // print()
+          bodies.add(temp);
 
           box2d.add(temp);
-          objectcounters++;
 
           double posx = 0;
           double posy = 0;
@@ -1083,7 +952,7 @@ class Actionsinitiator {
                     thegameobject.body.position.y + posy));
 
             temp.body.setTransform(Vector2(0, 0), temp.body.getAngle());
-            // print(thegameobject.body.getAngle());
+
             Offset temprotation2 = rotatepoint(
                 temp.body.position.x,
                 temp.body.position.y,
@@ -1091,14 +960,8 @@ class Actionsinitiator {
                 Offset(
                     temp.body.position.x + velx, temp.body.position.y + vely));
 
-            temp.body.setTransform(
-                Vector2(temprotation.dx, temprotation.dy),
-                bComponent
-                    .bodies[
-                        gameobjectitemscore[indcreate].getgameobject().theid]
-                    .body
-                    .getAngle());
-            // print(temp.body.getAngle());
+            temp.body.setTransform(Vector2(temprotation.dx, temprotation.dy),
+                temp.body.getAngle());
 
             temp.body.linearVelocity =
                 Vector2(temprotation2.dx, temprotation2.dy);
@@ -1115,10 +978,11 @@ class Actionsinitiator {
       double x1 = thegameobject.body.position.x;
       double y1 = thegameobject.body.position.y;
 
-      thegameobject.followobjectindexs.forEach((key, value) {
-        if (key == scriptindex) {
-          double x2 = value.body.position.x;
-          double y2 = value.body.position.y;
+      for (int indcreate = 0; indcreate < bodies.length; indcreate++) {
+        if (t.objectname == bodies[indcreate].objectname &&
+            !bodies[indcreate].isdestroyed) {
+          double x2 = bodies[indcreate].body.position.x;
+          double y2 = bodies[indcreate].body.position.y;
 
           double distance =
               math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
@@ -1144,18 +1008,10 @@ class Actionsinitiator {
             thegameobject.body.linearVelocity =
                 Vector2(movex * speed, movey * speed);
           }
+
+          break;
         }
-      });
-
-      // for (int indcreate = 0;
-      //     indcreate < bComponent.bodies.length;
-      //     indcreate++) {
-      //   if (t.objectname == bComponent.bodies[indcreate].objectname &&
-      //       !bComponent.bodies[indcreate].isdestroyed) {
-
-      //     break;
-      //   }
-      // }
+      }
     } else if (t is Clsactsettext) {
       if (t.text != null) {
         thegameobject.comptext.text = t.text;
@@ -1190,7 +1046,9 @@ class Actionsinitiator {
       }
     } else if (t is Clsactsetvariable) {
       if (!t.numbervalue.isNaN || t.expnumbervalue != null) {
+       
         if (t.expnumbervalue == null) {
+           
           if (t.scope == "global" || t.scope == null) {
             for (int indvar = 0;
                 indvar < globalvariablescore.length;
@@ -1217,16 +1075,18 @@ class Actionsinitiator {
             }
           }
         } else {
-          dynamic tempr = evaluateexpression(t.expnumbervalue, thegameobject);
-          double r = tempr is double ? tempr : 0;
+         
+          double r = evaluateexpression(t.expnumbervalue, thegameobject);
 //  print(r);
           if (t.scope == "global" || t.scope == null) {
+
             for (int indvar = 0;
                 indvar < globalvariablescore.length;
                 indvar++) {
               Clsvariable t2 = globalvariablescore[indvar];
-
+               
               if (t2 is Clsvariablenumber) {
+               
                 if (t2.name == t.variablename) {
                   t2.value = r;
                 }
@@ -1321,8 +1181,6 @@ class Actionsinitiator {
   }
 }
 
-int objectcounters = 0;
-
 class Gameobject extends BodyComponent {
   // bool isimageresolved = false;
   ui.Image theimage;
@@ -1346,8 +1204,6 @@ class Gameobject extends BodyComponent {
   Clscompcirclecollider compcirclecollider;
   Clscompgameobject thegameobject;
   Clscompscript thescript;
-  List<int> stepindexs = List();
-  Map<int, Gameobject> followobjectindexs = Map();
 
   bool isdebug;
   bool istouchdown = false;
@@ -1356,9 +1212,8 @@ class Gameobject extends BodyComponent {
 
   Gameobject(Box2DComponent box, this.context, this.goindex, this.bodyindex,
       this.objectname,
-      {this.isdebug = false,int naayid})
+      {this.isdebug = false})
       : super(box) {
-    stepindexs.clear();
     theimage = noimage;
     if (gameobjectitemscore[goindex].getsprite() != null) {
       compsprite = gameobjectitemscore[goindex].getsprite();
@@ -1389,33 +1244,28 @@ class Gameobject extends BodyComponent {
       }
     }
 
-    transformprop = Clscomptransform.fromJson(
-        gameobjectitemscore[goindex].gettransform().toJson());
+    transformprop = Clscomptransform(
+        x: gameobjectitemscore[goindex].gettransform().x,
+        y: gameobjectitemscore[goindex].gettransform().y,
+        sx: gameobjectitemscore[goindex].gettransform().sx,
+        sy: gameobjectitemscore[goindex].gettransform().sy);
 
     if (gameobjectitemscore[goindex].gettext() != null) {
-      comptext =
-          Clscomptext.fromJson(gameobjectitemscore[goindex].gettext().toJson());
+      comptext = gameobjectitemscore[goindex].gettext();
     }
     if (gameobjectitemscore[goindex].getrigidbody() != null) {
-      comprigidbody = Clscomprigidbody.fromJson(
-          gameobjectitemscore[goindex].getrigidbody().toJson());
+      comprigidbody = gameobjectitemscore[goindex].getrigidbody();
     }
     if (gameobjectitemscore[goindex].getboxcollider() != null) {
-      compboxcollider = Clscompboxcollider.fromJson(
-          gameobjectitemscore[goindex].getboxcollider().toJson());
+      compboxcollider = gameobjectitemscore[goindex].getboxcollider();
     }
     if (gameobjectitemscore[goindex].getcirclecollider() != null) {
-      compcirclecollider = Clscompcirclecollider.fromJson(
-          gameobjectitemscore[goindex].getcirclecollider().toJson());
+      compcirclecollider = gameobjectitemscore[goindex].getcirclecollider();
     }
-    thegameobject = Clscompgameobject.fromJson(
-        naayid !=null?naayid: gameobjectitemscore[goindex].getgameobject().theid,
-        gameobjectitemscore[goindex].getgameobject().toJson());
+    thegameobject = gameobjectitemscore[goindex].getgameobject();
     thescript = Clscompscript.fromJson(
         gameobjectitemscore[goindex].getscript().toJson());
-
     createBody();
-    // onloaded();
   }
 
   void updatesprite() {
@@ -1562,7 +1412,7 @@ class Gameobject extends BodyComponent {
   }
 
   void onbuttonevent(Buttonvalues buttonvalues) {
-    // print(buttonvalues.variable + "                " + buttonvalues.event);
+    print(buttonvalues.variable + "                " + buttonvalues.event);
   }
 
   void onuijoystickdirectionchanged(Joystickvalues joystickvalues) {
@@ -1601,11 +1451,8 @@ class Gameobject extends BodyComponent {
     }
   }
 
-  void destroyobject(Gameobject thegameobject2, String where,int thebodyindex) {
-    // print(thegame)
-    // if(isdestroyed) return;
+  void destroyobject(Gameobject thegameobject2, String where) {
     isdestroyed = true;
-
     // world.destroyBody(this.body);
     this.body.setActive(false);
     this.body.setAwake(false);
@@ -1614,34 +1461,9 @@ class Gameobject extends BodyComponent {
     if (where == "bodies" && bodyindex >= gameobjectitemscore.length) {
       // actionsinitiator.bodies.removeAt(bodyindex);
     }
-    if (where == "bcomponent" && thegameobject2.bodyindex >= gameobjectitemscore.length) {
-      // Future.delayed(Duration(seconds: 1),(){
+    if (where == "bcomponent" && bodyindex >= gameobjectitemscore.length) {
+      bComponent.bodies.remove(thegameobject2);
       // bComponent.bodies.removeAt(bodyindex);
-      // });
-      // bComponent.bodies.remove(this);
-      // print("  $objectname  b$bodyindex g$goindex       ${bComponent.bodies.length}");
-      // deletedobjects.add("$objectname$bodyindex");
-      //  actionsinitiator.bodies.remove(thegameobject2);// = bComponent.bodies;
-      // for (int a = 0; a < bComponent.bodies.length; a++) {
-      //   if (thegameobject2.bodyindex == bodyindex) {
-      // bComponent.bodies[a].box.remove(this);
-
-      //  print(thegameobject2.bodyindex);
-    
-        // bComponent.bodies.remove(thet);
-        bComponent.bodies.removeWhere((key,value)=>key==thegameobject2.bodyindex);
-      
-      // if (!thet.isdestroyed) {
-      //   // thet.onupdate(t);
-      // }
-    
-
-      //     print(bComponent.bodies.length);
-      //     break;
-      //   }
-      // }
-      // bComponent.bodies.remove(thegameobject2);
-
       // print(bodyindex);
     }
 
@@ -1660,26 +1482,6 @@ class Gameobject extends BodyComponent {
 
   void onloaded() {
     if (isdestroyed) return;
-    followobjectindexs.clear();
-    for (int asdf = 0; asdf < thescript.components.length; asdf++) {
-      Clsscriptitem t = thescript.components[asdf];
-      if (t is Clscompstep) {
-        stepindexs.add(asdf);
-      }
-      if (t is Clsactfollowobject) {
-        // print(bComponent.bodies.length);
-        for (int a = 0; a < bComponent.bodies.length; a++) {
-          Gameobject thet = bComponent.bodies.values.elementAt(a);
-
-          if (thet.thegameobject.name == t.objectname) {
-            //  print(asdf);
-            followobjectindexs.addAll({asdf: thet});
-            break;
-          }
-        }
-      }
-    }
-
     actioninitiator(eevents: Eevents.onobjectloaded);
     isloaded = true;
   }
@@ -2128,36 +1930,27 @@ class Gameobject extends BodyComponent {
 class BComponent extends Box2DComponent {
   BuildContext context;
   BComponent(this.context, {this.isdebug = false}) : super(scale: 1.0);
-  Map<int, Gameobject> bodies = Map();
-  bool isdebug = false;
-  // String wheretoadd="";
-  // Map<int, Gameobject> toaddtouchdown = Map();
+  List<Gameobject> bodies = List();
+  bool isdebug;
+  // Vector2 getcamera;
 
-  int indexforcamerafollow = -1;
-  Clscompcameracontroller cameracontroller = cameragetcameracontrollercore();
-  Gameobject tofollow;
   @override
   void initializeWorld() {
-    cameracontroller = cameragetcameracontrollercore();
-    // print("asdfasdfasdfasdfasdfasdfasdf");
-    objectcounters = 0;
     currentcamerasettings = Cameraproperties(0, 0, 1);
     actionsinitiator = Actionsinitiator(
         box2d: this, context: this.context, world: world, viewport: viewport);
 
-    // print("inited");
     for (int a = 0; a < gameobjectitemscore.length; a++) {
       // if (gameobjectitemscore[a].getgameobject().isactive != "false") {
-      Gameobject temp = Gameobject(this, context, a, objectcounters,
+      Gameobject temp = Gameobject(this, context, a, bodies.length,
           gameobjectitemscore[a].getgameobject().name,
           isdebug: isdebug);
 
-      bodies.addAll({gameobjectitemscore[a].getgameobject().theid: temp});
+      bodies.add(temp);
 
       add(temp);
-      objectcounters++;
 
-      // actionsinitiator.bodies = bodies;
+      actionsinitiator.bodies = bodies;
       // }
     }
 
@@ -2183,49 +1976,24 @@ class BComponent extends Box2DComponent {
       }
     }
 
-for (int a = 0; a < bodies.length; a++) {
-      Gameobject thet = bodies.values.elementAt(a);
-
-      thet.onloaded();
-    }
-
-
-    // bodies.forEach((key, value) {
-    //   value.onloaded();
-    // });
-
     for (int a = 0; a < bodies.length; a++) {
-      Gameobject thet = bodies.values.elementAt(a);
-
-      if (cameracontroller.objecttofollow ==
-          gameobjectitemscore[thet.goindex].getgameobject().name) {
-        tofollow = thet;
-
-        // cameraFollow(thet,
-        //     horizontal: cameracontroller.h, vertical: cameracontroller.v);
-        // isnaaycamerafollow = true;
-        break;
-      }
+      // for(int b=0;b<bodies[a].)
+      // if (bodies[a].objectname == "body") {
+      //   //  print("asdfasdf");
+      //   // bodies[a].createRevolutejoints(bodies[a].body, bodies[0].body);
+      //   // bodies[a].createRevolutejoints2(bodies[a].body, bodies[1].body);
+      // }
+      bodies[a].onloaded();
     }
-
-    // for (int a = 0; a < bodies.length; a++) {
-    //   // for(int b=0;b<bodies[a].)
-    //   // if (bodies[a].objectname == "body") {
-    //   //   //  print("asdfasdf");
-    //   //   // bodies[a].createRevolutejoints(bodies[a].body, bodies[0].body);
-    //   //   // bodies[a].createRevolutejoints2(bodies[a].body, bodies[1].body);
-    //   // }
-    //   bodies[a].onloaded();
-    // }
 
     // print(bodies.length);
-    contactListener = MyContactListener();
+    contactListener = MyContactListener(bodies);
     world.setContactListener(contactListener);
   }
 
   @override
   void resize(ui.Size size) {
-    screensize = size;
+    screensize = (size);
     // print(screensize);
 
     super.resize(size);
@@ -2233,68 +2001,36 @@ for (int a = 0; a < bodies.length; a++) {
 
   @override
   void update(double t) {
-    // if(isloadedna==false) return;
     super.update(t);
     deltatime = t;
+    Clscompcameracontroller cameracontroller = cameragetcameracontrollercore();
 
     this.viewport.scale = cameracontroller.scale;
     this.viewport.translation =
         Vector2(-cameracontroller.x, cameracontroller.y);
-
-//  bodies.forEach((key, value) {
-//       if (!value.isdestroyed) {
-//         if (cameracontroller.objecttofollow ==
-//             gameobjectitemscore[value.goindex].getgameobject().name) {
-//           // indexforcamerafollow = key;
-//           // tofollow = value;
-
-//           cameraFollow(value,
-//           horizontal: cameracontroller.h, vertical: cameracontroller.v);
-//         }
-//       }
-//     });
-    // print(tofollow.thegameobject.theid);
-    if (tofollow != null) {
-      cameraFollow(tofollow,
-          horizontal: cameracontroller.h, vertical: cameracontroller.v);
-    }
-    // try {
-    // bool nakitanna = false;
-
-    // for (int a = 0; a < bodies.length; a++) {
-    //   if (!bodies[a].isdestroyed) {
-    //     bodies[a].onupdate(t);
-    //   }
-    // }
-
-    // Iterable x = bodies.values;
-
-    // for (int a = x.length - 1; a >= 0; a--) {
-    //   Gameobject y = x.elementAt(a);
-
-    //   if (!y.isdestroyed) {
-    //     y.onupdate(t);
-    //   }
-    // }
-
-    // bodies.forEach((key, value) {
-    //   if (!value.isdestroyed) {
-    //     value.onupdate(t);
-    //   }
-    // });
-
-    for (int a = 0; a < bodies.length; a++) {
-      Gameobject thet = bodies.values.elementAt(a);
-      if (!thet.isdestroyed) {
-        thet.onupdate(t);
+    bool isnaaycamerafollow = false;
+    try {
+      for (int a = 0; a < bodies.length; a++) {
+        if (!bodies[a].isdestroyed) {
+          if (cameracontroller.objecttofollow ==
+              gameobjectitemscore[bodies[a].goindex].getgameobject().name) {
+            cameraFollow(bodies[a],
+                horizontal: cameracontroller.h, vertical: cameracontroller.v);
+            isnaaycamerafollow = true;
+            break;
+          }
+        }
       }
+      for (int a = 0; a < bodies.length; a++) {
+        if (!bodies[a].isdestroyed) {
+          bodies[a].onupdate(t);
+        }
+      }
+    } catch (error) {}
+    if (isnaaycamerafollow == false) {
+      // viewport.setCamera(currentcamerasettings.x, currentcamerasettings.y, 1);
+      // print(currentcamerasettings.x);
     }
-
-    //   } catch (error) {}
-    //   // if (isnaaycamerafollow == false) {
-    //   //   // viewport.setCamera(currentcamerasettings.x, currentcamerasettings.y, 1);
-    //   //   // print(currentcamerasettings.x);
-    //   // }
   }
 
   @override
@@ -2303,52 +2039,15 @@ for (int a = 0; a < bodies.length; a++) {
   }
 
   void ontouchdown(PointerDownEvent details) {
-    // if(isloadedna==false) return;
-
     touchdownlocation = viewport.getScreenToWorld(
         Vector2(details.localPosition.dx, details.localPosition.dy));
     touchdownlocationphysical = details.localPosition;
     touchmovelocation = viewport.getScreenToWorld(
         Vector2(details.localPosition.dx, details.localPosition.dy));
     touchmovelocationphysical = details.localPosition;
-
-// Iterator<Gameobject> it = bodies.values.iterator;
-
-// while(it.moveNext()){
-//   it.current.ontouchdown(details);
-// }
-
-   
-
     for (int a = 0; a < bodies.length; a++) {
-      Gameobject thet = bodies.values.elementAt(a);
-      if (!thet.isdestroyed) {
-        thet.ontouchdown(details);
-      }
+      bodies[a].ontouchdown(details);
     }
-
-    // bodies.forEach((key, value) {
-    //   value.ontouchdown(details);
-    // });
-
-    // if (toaddtouchdown.length > 0) {
-    //   bodies.addEntries(toaddtouchdown.entries);
-    //   toaddtouchdown.clear();
-    // }
-    // print(bodies.length);
-    // for(var k in bodies.values){
-    //   k.ontouchdown(details);
-    // }
-    // for (int a = 0; a < bodies.keys.length; a++) {
-    //   bodies[bodies.keys].ontouchdown(details);
-    // }
-
-    // Iterable t = bodies.values;
-
-    // for (int a = t.length - 1; a >= 0; a--) {
-    //   Gameobject y = t.elementAt(a);
-    //   y.ontouchdown(details);
-    // }
   }
 
   void ontouchup(PointerUpEvent details) {
@@ -2356,18 +2055,9 @@ for (int a = 0; a < bodies.length; a++) {
     touchuplocation = viewport.getScreenToWorld(
         Vector2(details.localPosition.dx, details.localPosition.dy));
 
-    // bodies.forEach((key, value) {
-    //   value.ontouchup(details);
-    // });
-    // for (int a = 0; a < bodies.length; a++) {
-    //   // print("asdfasdf");
-    //   bodies[a].ontouchup(details);
-    // }
     for (int a = 0; a < bodies.length; a++) {
-      Gameobject thet = bodies.values.elementAt(a);
-      if (!thet.isdestroyed) {
-        thet.ontouchup(details);
-      }
+      // print("asdfasdf");
+      bodies[a].ontouchup(details);
     }
   }
 
@@ -2376,49 +2066,21 @@ for (int a = 0; a < bodies.length; a++) {
         Vector2(details.localPosition.dx, details.localPosition.dy));
 
     touchmovelocationphysical = details.localPosition;
-
     for (int a = 0; a < bodies.length; a++) {
-      Gameobject thet = bodies.values.elementAt(a);
-      if (!thet.isdestroyed) {
-        thet.ontouchmove(details);
-      }
+      bodies[a].ontouchmove(details);
     }
-    // bodies.forEach((key, value) {
-    //   value.ontouchmove(details);
-    // });
-    // for (int a = 0; a < bodies.length; a++) {
-    //   bodies[a].ontouchmove(details);
-    // }
   }
 
   void onjoystickdirectionchanged(Joystickvalues joystickvalues) {
-    // bodies.forEach((key, value) {
-    //   value.onuijoystickdirectionchanged(joystickvalues);
-    // });
     for (int a = 0; a < bodies.length; a++) {
-      Gameobject thet = bodies.values.elementAt(a);
-      if (!thet.isdestroyed) {
-        thet.onuijoystickdirectionchanged(joystickvalues);
-      }
+      bodies[a].onuijoystickdirectionchanged(joystickvalues);
     }
-    // for (int a = 0; a < bodies.length; a++) {
-    //   bodies[a].onuijoystickdirectionchanged(joystickvalues);
-    // }
   }
 
   void onbuttonevent(Buttonvalues buttonvalues) {
-    // bodies.forEach((key, value) {
-    //   value.onbuttonevent(buttonvalues);
-    // });
     for (int a = 0; a < bodies.length; a++) {
-      Gameobject thet = bodies.values.elementAt(a);
-      if (!thet.isdestroyed) {
-        thet.onbuttonevent(buttonvalues);
-      }
+      bodies[a].onbuttonevent(buttonvalues);
     }
-    // for (int a = 0; a < bodies.length; a++) {
-    //   bodies[a].onbuttonevent(buttonvalues);
-    // }
   }
 }
 

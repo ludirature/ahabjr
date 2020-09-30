@@ -17,18 +17,12 @@ class Gameview extends BaseGame {
   bool isdebug;
   bool recordFps() => true;
   Gameview(this.context, {this.isdebug = false}) {
- 
     initialize();
     bComponent = BComponent(context, isdebug: isdebug);
-     
 
     if (bComponent == null) return;
     bComponent.initializeWorld();
-  uicomponents.forEach((f){
-      if(f is Clsuijoystickdirectional){
-         bComponent.onjoystickdirectionchanged(Joystickvalues(0, 0, 0, 0, f.variablename));
-      }
-    });
+
     if (isdebug) {
       //
     }
@@ -44,9 +38,7 @@ class Gameview extends BaseGame {
   }
 
   void initialize() async {
-    
     resize(await Flame.util.initialDimensions());
-    
   }
 
   @override
@@ -113,12 +105,12 @@ class Gameview extends BaseGame {
           }
         }
       }
-
-      bComponent.bodies.forEach((key, value) {
-        // print(key);
-        for (int a = 0; a < value.thescript.localvariables.length; a++) {
-          if (value.isdestroyed == false) {
-            Clsvariable t = value.thescript.localvariables[a];
+      for (int c = 0; c < bComponent.bodies.length; c++) {
+        for (int a = 0;
+            a < bComponent.bodies[c].thescript.localvariables.length;
+            a++) {
+          if (bComponent.bodies[c].isdestroyed == false) {
+            Clsvariable t = bComponent.bodies[c].thescript.localvariables[a];
             if (t is Clsvariablenumber) {
               if (t.showdebug == null || t.showdebug == true) {
                 drawtext(canvas, "${t.name}: ${t.value}",
@@ -142,9 +134,37 @@ class Gameview extends BaseGame {
             }
           }
         }
-      });
+      }
 
-   
+// for (int c = 0; c < gameobjectitemscore.length; c++) {
+//         for (int a = 0;
+//             a < gameobjectitemscore[c].getscript().localvariables.length;
+//             a++) {
+//           Clsvariable t = gameobjectitemscore[c].getscript().localvariables[a];
+//           if (t is Clsvariablenumber) {
+//             // print(t.name);
+//             if (t.showdebug==null || t.showdebug==true) {
+//               drawtext(canvas, "${t.name}: ${t.value}",
+//                   (themargin * 1) + (20 * (b + 1)).toDouble());
+//               b++;
+//             }
+//           }
+//           if (t is Clsvariableboolean) {
+//             if (t.showdebug==null || t.showdebug==true) {
+//               drawtext(canvas, "${t.name}: ${t.value}",
+//                   (themargin * 1) + (20 * (b + 1)).toDouble());
+//               b++;
+//             }
+//           }
+//           if (t is Clsvariabletext) {
+//             if (t.showdebug==null || t.showdebug==true) {
+//               drawtext(canvas, "${t.name}: ${t.value}",
+//                   (themargin * 1) + (20 * (b + 1)).toDouble());
+//               b++;
+//             }
+//           }
+//         }
+//       }
 
     }
   }

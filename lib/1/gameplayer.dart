@@ -229,7 +229,6 @@ class _TheUIcomponentsState extends State<TheUIcomponents> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Stack(
         children: List.generate(uicomponentscore.length, (index) {
       Clsuicomponent t = uicomponentscore[index];
