@@ -1,8 +1,6 @@
-import 'package:flame/components/component.dart';
-import 'package:flame/components/mixins/tapable.dart';
+
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
-import 'package:flame/gestures.dart';
 
 import 'package:flutter/material.dart';
 
@@ -17,21 +15,22 @@ class Gameview extends BaseGame {
   bool isdebug;
   bool recordFps() => true;
   Gameview(this.context, {this.isdebug = false}) {
- 
     initialize();
     bComponent = BComponent(context, isdebug: isdebug);
-     
+   
 
     if (bComponent == null) return;
     bComponent.initializeWorld();
-  uicomponents.forEach((f){
-      if(f is Clsuijoystickdirectional){
-         bComponent.onjoystickdirectionchanged(Joystickvalues(0, 0, 0, 0, f.variablename));
+    uicomponents.forEach((f) {
+      if (f is Clsuijoystickdirectional) {
+        bComponent.onjoystickdirectionchanged(
+            Joystickvalues(0, 0, 0, 0, f.variablename));
       }
     });
     if (isdebug) {
       //
     }
+  
     // add(Testing());
     //  add(Testing2());
     gameisdebug = isdebug;
@@ -44,9 +43,7 @@ class Gameview extends BaseGame {
   }
 
   void initialize() async {
-    
     resize(await Flame.util.initialDimensions());
-    
   }
 
   @override
@@ -62,7 +59,7 @@ class Gameview extends BaseGame {
           ..color = cameragetcameracontrollercore().backgroundcolor != null
               ? Color(cameragetcameracontrollercore().backgroundcolor)
               : Colors.blueGrey);
-
+    super.render(canvas);
     // print(camera_getcameracontroller().backgroundcolor);
 
     bComponent.render(canvas);
@@ -143,9 +140,6 @@ class Gameview extends BaseGame {
           }
         }
       });
-
-   
-
     }
   }
 
@@ -198,6 +192,7 @@ class Gameview extends BaseGame {
 
   @override
   void update(double t) {
+    super.update(t);
     if (bComponent == null) return;
 
     bComponent.update(t);
@@ -232,6 +227,7 @@ class Gameview extends BaseGame {
 
   void onButtonEvent(Buttonvalues buttonvalues) {
     if (bComponent == null) return;
+    print(buttonvalues);
     bComponent.onbuttonevent(buttonvalues);
   }
 }

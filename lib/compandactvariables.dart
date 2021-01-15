@@ -55,6 +55,9 @@ class Clsgameobjectitem {
       if (t is Clscomptext) {
         thelist.addAll({"comptext$a": t.toJson()});
       }
+      if (t is Clscomplifebar) {
+        thelist.addAll({"complifebar$a": t.toJson()});
+      }
       if (t is Clscompscript) {
         thelist.addAll({"compscript$a": t.toJson()});
       }
@@ -95,6 +98,9 @@ class Clsgameobjectitem {
       }
       if (key.contains("comptext")) {
         components2.add(Clscomptext.fromJson(value));
+      }
+      if (key.contains("complifebar")) {
+        components2.add(Clscomplifebar.fromJson(value));
       }
       if (key.contains("compscript")) {
         components2.add(Clscompscript.fromJson(value));
@@ -189,6 +195,16 @@ class Clsgameobjectitem {
     Clscomptext gameobject;
     for (int a = 0; a < components.length; a++) {
       if (components[a] is Clscomptext) {
+        gameobject = components[a];
+      }
+    }
+    return gameobject;
+  }
+
+  Clscomplifebar getlifebar() {
+    Clscomplifebar gameobject;
+    for (int a = 0; a < components.length; a++) {
+      if (components[a] is Clscomplifebar) {
         gameobject = components[a];
       }
     }
@@ -473,6 +489,21 @@ class Clsgameobjectitem {
     }
   }
 
+  void setlifebar(Map tvalue) {
+    bool isnaa = false;
+    for (int a = 0; a < components.length; a++) {
+      Clscomponent t = components[a];
+      if (t is Clscomplifebar) {
+        t = Clscomplifebar.fromJson(tvalue);
+
+        isnaa = true;
+      }
+    }
+    if (isnaa == false) {
+      components.add(Clscomplifebar.fromJson(tvalue));
+    }
+  }
+
   void setrigidbody(Map tvalue) {
     //
     bool isnaa = false;
@@ -664,13 +695,20 @@ class Clscompsprite extends Clscomponent {
   double h;
   String spriteanimation;
   double opacity;
+  int spriteindex;
   Clscompsprite(
-      {this.imagepath, this.w, this.h, this.spriteanimation, this.opacity = 1});
+      {this.imagepath,
+      this.w,
+      this.h,
+      this.spriteanimation,
+      this.opacity = 1,
+      this.spriteindex = 0});
   Map<String, dynamic> toJson() {
     return {
       "imagepath": this.imagepath,
       "w": this.w,
       "h": this.h,
+      "spriteindex": this.spriteindex,
       "opacity": this.opacity,
       "spriteanimation": this.spriteanimation
     };
@@ -680,6 +718,7 @@ class Clscompsprite extends Clscomponent {
       : imagepath = json['imagepath'],
         w = json['w'],
         h = json['h'],
+        spriteindex = json['spriteindex'] == null ? 0 : json['spriteindex'],
         opacity = json['opacity'] == null ? 1 : json['opacity'],
         spriteanimation = json['spriteanimation'];
 }
@@ -780,6 +819,56 @@ class Clscompcirclecollider extends Clscomponent {
       : x = json['x'],
         y = json['y'],
         radius = json['radius'];
+}
+
+class Clscomplifebar extends Clscomponent {
+  double maxvalue;
+  double thevalue;
+  int backgroundcolor;
+  int foregroundcolor;
+  double width;
+  double height;
+  double top;
+  double left;
+
+  String alignment;
+
+  Clscomplifebar({
+    this.maxvalue,
+    this.thevalue,
+    this.alignment,
+    this.top,
+    this.left,
+    this.width,
+    this.height,
+    this.backgroundcolor,
+    this.foregroundcolor,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      "maxvalue": this.maxvalue,
+      "thevalue": this.thevalue,
+      "width": this.width,
+      "height": this.height,
+      "alignment": this.alignment,
+      "top": this.top,
+      "left": this.left,
+      "backgroundcolor": this.backgroundcolor,
+      "foregroundcolor": this.foregroundcolor,
+    };
+  }
+
+  Clscomplifebar.fromJson(Map<String, dynamic> json)
+      : maxvalue = json['maxvalue'],
+        thevalue = json['thevalue'],
+        width = json['width'],
+        height = json['height'],
+        alignment = json['alignment'],
+        top = json['top'],
+        left = json['left'],
+        backgroundcolor = json['backgroundcolor'],
+        foregroundcolor = json['foregroundcolor'];
 }
 
 class Clscomptext extends Clscomponent {
@@ -889,6 +978,9 @@ class Clscompscript extends Clscomponent {
       if (t is Clsactsettext) {
         thelist.addAll({"actsettext$a": t.toJson()});
       }
+      if (t is Clsactsetlifebar) {
+        thelist.addAll({"actsetlifebar$a": t.toJson()});
+      }
       if (t is Clsactrestartscene) {
         thelist.addAll({"actrestartscene$a": t.toJson()});
       }
@@ -984,6 +1076,9 @@ class Clscompscript extends Clscomponent {
       }
       if (key.contains("actsettext")) {
         components2.add(Clsactsettext.fromJson(value));
+      }
+      if (key.contains("actsetlifebar")) {
+        components2.add(Clsactsetlifebar.fromJson(value));
       }
       if (key.contains("actsetvariable")) {
         components2.add(Clsactsetvariable.fromJson(value));
@@ -1085,6 +1180,18 @@ class Clsscriptitem {
       }
     }
     if (t is Clsactsettext) {
+      if (whattoget == "pos") {
+        if (t.vsPosX == null || t.vsPosY == null) {
+          return Offset(0, 0);
+        }
+        return Offset(t.vsPosX, t.vsPosY);
+      } else if (whattoget == "childindex") {
+        return t.childindex;
+      } else if (whattoget == "vswidth") {
+        return t.vswidth;
+      }
+    }
+    if (t is Clsactsetlifebar) {
       if (whattoget == "pos") {
         if (t.vsPosX == null || t.vsPosY == null) {
           return Offset(0, 0);
@@ -1483,6 +1590,15 @@ class Clsscriptitem {
       }
     }
     if (t is Clsactfollowobject) {
+      if (whattoset == "pos") {
+        t.vsPosX = value.dx;
+        t.vsPosY = value.dy;
+      }
+      if (whattoset == "childindex") {
+        t.childindex = value;
+      }
+    }
+    if (t is Clsactsetlifebar) {
       if (whattoset == "pos") {
         t.vsPosX = value.dx;
         t.vsPosY = value.dy;
@@ -2221,7 +2337,6 @@ class Clsactfollowobject extends Clsscriptitem {
   int childindex = -1;
   double vswidth = 150;
 
-
   Clsactfollowobject({this.objectname, this.speed, this.expspeed});
   Map<String, dynamic> toJson() {
     return {
@@ -2317,6 +2432,53 @@ class Clsactsettext extends Clsscriptitem {
         fontsize = fromjsondouble(json['fontsize']),
         textcolor = json['textcolor'],
         fontfamily = json['fontfamily'],
+        vsPosX = json['vsPosX'],
+        vsPosY = json['vsPosY'],
+        childindex = json['childindex'];
+}
+
+class Clsactsetlifebar extends Clsscriptitem {
+  double maxvalue;
+  double thevalue;
+  int backgroundcolor;
+  int foregroundcolor;
+
+  String expmaxvalue;
+  String expthevalue;
+
+  double vsPosX = 0;
+  double vsPosY = 0;
+  int childindex = -1;
+  double vswidth = 150;
+  Clsactsetlifebar({
+    this.maxvalue,
+    this.thevalue,
+    this.expmaxvalue,
+    this.expthevalue,
+    this.backgroundcolor,
+    this.foregroundcolor,
+  });
+  Map<String, dynamic> toJson() {
+    return {
+      "maxvalue": tojsondouble(this.maxvalue),
+      "thevalue": tojsondouble(this.thevalue),
+      "expmaxvalue": this.expmaxvalue,
+      "expthevalue": this.expthevalue,
+      "backgroundcolor": this.backgroundcolor,
+      "foregroundcolor": this.foregroundcolor,
+      "vsPosX": this.vsPosX,
+      "vsPosY": this.vsPosY,
+      "childindex": this.childindex,
+    };
+  }
+
+  Clsactsetlifebar.fromJson(Map<String, dynamic> json)
+      : maxvalue = fromjsondouble(json['maxvalue']),
+        thevalue = fromjsondouble(json['thevalue']),
+        backgroundcolor = json['backgroundcolor'],
+        foregroundcolor = json['foregroundcolor'],
+        expmaxvalue = json['expmaxvalue'],
+        expthevalue = json['expthevalue'],
         vsPosX = json['vsPosX'],
         vsPosY = json['vsPosY'],
         childindex = json['childindex'];

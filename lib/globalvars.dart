@@ -28,8 +28,6 @@ List<Clsvariable> globalvariablescore = List();
 List<Clssoundcomponent> soundslistscore = List();
 List<Clsuicomponent> uicomponentscore = List();
 
-
-
 Function refreshuicomponents;
 
 Map<String, ui.Image> loadedimages = Map();
@@ -144,6 +142,7 @@ bool checkvariableduplicate(List<dynamic> whatglobalvariable,
   }
   return false;
 }
+
 bool checkvariableduplicatelocal(List<dynamic> whatglobalvariable,
     String variablename, Clsvariable currentvariable) {
   for (int a = 0; a < whatglobalvariable.length; a++) {
@@ -207,7 +206,7 @@ Future loadprojectcore(String scenename) async {
     if (key.contains('uijoystickdirectional')) {
       uicomponentscore.add(Clsuijoystickdirectional.fromJson(value));
     }
-     if (key.contains('uibutton')) {
+    if (key.contains('uibutton')) {
       uicomponentscore.add(Clsuibutton.fromJson(value));
     }
   });
@@ -302,13 +301,9 @@ Future loadprojectcore2(String scenename) async {
   });
 }
 
-
-
-
-
 void expressionmathvariables(Map<String, dynamic> context) {
   var temprandom = math.Random();
-  
+
   context.addAll({
     "math_random": (int number, [int number2]) {
       if (number2 == null) {
@@ -393,6 +388,16 @@ void expressionmathvariables(Map<String, dynamic> context) {
         return number3;
       }
       return number1;
+    }
+  });
+  context.addAll({
+    "math_round": (num number) {
+      return number.round();
+    }
+  });
+  context.addAll({
+    "math_lerp": (num number1, num number2, num number3) {
+      return ui.lerpDouble(number1, number2, number3);
     }
   });
 }

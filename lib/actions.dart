@@ -20,7 +20,7 @@ import 'dart:math' as math;
 Actionsinitiator actionsinitiator = Actionsinitiator();
 BComponent bComponent;
 
-Size screensize = Size(0,0);
+Size screensize = Size(0, 0);
 
 Vector2 touchmovelocation = Vector2(0, 0);
 Vector2 touchdownlocation = Vector2(0, 0);
@@ -652,6 +652,12 @@ class Actionsinitiator {
       "velocity_y": thegameobject.body.linearVelocity.y,
       "velocity_angle": thegameobject.body.angularVelocity,
       "object_id": thegameobject.thegameobject.theid,
+      "lifebar_value": thegameobject.complifebar == null
+          ? 0
+          : thegameobject.complifebar.thevalue,
+      "lifebar_max": thegameobject.complifebar == null
+          ? 0
+          : thegameobject.complifebar.maxvalue,
       "camera_width": getprojectsettingscore().appversion >= 11
           ? screensize.width
           : viewport.size.width,
@@ -702,7 +708,6 @@ class Actionsinitiator {
 
     // print(uijoystickvalues.length);
     uijoystickvalues.forEach((key, value) {
-      
       context.addAll({key + "_angle": value["angle"]});
       context.addAll({key + "_distance": value["distance"]});
       context.addAll({key + "_value_x": value["valx"]});
@@ -735,9 +740,9 @@ class Actionsinitiator {
       destroytimers();
 
       loadprojectcore2(t.scenename).then((onValue) {
-        for (int thea = bComponent.bodies.length-1; thea >= 0; thea--) {
+        for (int thea = bComponent.bodies.length - 1; thea >= 0; thea--) {
           Gameobject thet = bComponent.bodies.values.elementAt(thea);
-          thet.destroyobject(thet, "bcomponent",thet.bodyindex);
+          thet.destroyobject(thet, "bcomponent", thet.bodyindex);
           // bComponent.bodies.remove(thet);
           // bComponent.bodies.remove(thet.thegameobject.theid);
 
@@ -994,7 +999,8 @@ class Actionsinitiator {
     } else if (t is Clsactdestroyobject) {
       // if (a < bodies.length) {
 
-      thegameobject.destroyobject(thegameobject, "bcomponent",thegameobject.bodyindex);
+      thegameobject.destroyobject(
+          thegameobject, "bcomponent", thegameobject.bodyindex);
 
       // return;
       // bodies[a].destroyobject("bodies");
@@ -1013,16 +1019,19 @@ class Actionsinitiator {
           indcreate++) {
         if (t.objectname ==
             gameobjectitemscore[indcreate].getgameobject().name) {
-               int newid = objectcounters;
+          int newid = objectcounters;
           Gameobject temp = Gameobject(
               box2d, context, indcreate, objectcounters, t.objectname,
-              isdebug: bComponent.bodies[indcreate]==null?false:bComponent.bodies[indcreate].isdebug,naayid: newid);
+              isdebug: bComponent.bodies[indcreate] == null
+                  ? false
+                  : bComponent.bodies[indcreate].isdebug,
+              naayid: newid);
 
           // print("asdf");
 //  print(temp.objectname);
           // bodies.add(temp);
           // print(bComponent.generateobjectid());
-         
+
           // print(newid);
           // temp.thegameobject.theid = newid;
           bComponent.bodies.addAll({newid: temp});
@@ -1188,6 +1197,31 @@ class Actionsinitiator {
       if (t.textcolor != null) {
         thegameobject.comptext.textcolor = t.textcolor;
       }
+    } else if (t is Clsactsetlifebar) {
+      if (!t.thevalue.isNaN || t.expthevalue != null) {
+        if (t.expthevalue == null) {
+          thegameobject.complifebar.thevalue = t.thevalue;
+        } else {
+          double r = evaluateexpression(t.expthevalue, thegameobject);
+
+          thegameobject.complifebar.thevalue = r;
+        }
+      }
+      if (!t.maxvalue.isNaN || t.expmaxvalue != null) {
+        if (t.expmaxvalue == null) {
+          thegameobject.complifebar.maxvalue = t.maxvalue;
+        } else {
+          double r = evaluateexpression(t.expmaxvalue, thegameobject);
+
+          thegameobject.complifebar.maxvalue = r;
+        }
+      }
+      if (t.backgroundcolor != null) {
+        thegameobject.complifebar.backgroundcolor = t.backgroundcolor;
+      }
+      if (t.foregroundcolor != null) {
+        thegameobject.complifebar.foregroundcolor = t.foregroundcolor;
+      }
     } else if (t is Clsactsetvariable) {
       if (!t.numbervalue.isNaN || t.expnumbervalue != null) {
         if (t.expnumbervalue == null) {
@@ -1339,6 +1373,7 @@ class Gameobject extends BodyComponent {
   Spriteanimation sp;
   Clscomptransform transformprop;
   Clscomptext comptext;
+  Clscomplifebar complifebar;
   String firstimage;
   Clscompsprite compsprite;
   Clscomprigidbody comprigidbody;
@@ -1356,7 +1391,7 @@ class Gameobject extends BodyComponent {
 
   Gameobject(Box2DComponent box, this.context, this.goindex, this.bodyindex,
       this.objectname,
-      {this.isdebug = false,int naayid})
+      {this.isdebug = false, int naayid})
       : super(box) {
     stepindexs.clear();
     theimage = noimage;
@@ -1396,10 +1431,17 @@ class Gameobject extends BodyComponent {
       comptext =
           Clscomptext.fromJson(gameobjectitemscore[goindex].gettext().toJson());
     }
+
+    if (gameobjectitemscore[goindex].getlifebar() != null) {
+      complifebar = Clscomplifebar.fromJson(
+          gameobjectitemscore[goindex].getlifebar().toJson());
+    }
+
     if (gameobjectitemscore[goindex].getrigidbody() != null) {
       comprigidbody = Clscomprigidbody.fromJson(
           gameobjectitemscore[goindex].getrigidbody().toJson());
     }
+
     if (gameobjectitemscore[goindex].getboxcollider() != null) {
       compboxcollider = Clscompboxcollider.fromJson(
           gameobjectitemscore[goindex].getboxcollider().toJson());
@@ -1409,7 +1451,9 @@ class Gameobject extends BodyComponent {
           gameobjectitemscore[goindex].getcirclecollider().toJson());
     }
     thegameobject = Clscompgameobject.fromJson(
-        naayid !=null?naayid: gameobjectitemscore[goindex].getgameobject().theid,
+        naayid != null
+            ? naayid
+            : gameobjectitemscore[goindex].getgameobject().theid,
         gameobjectitemscore[goindex].getgameobject().toJson());
     thescript = Clscompscript.fromJson(
         gameobjectitemscore[goindex].getscript().toJson());
@@ -1567,7 +1611,7 @@ class Gameobject extends BodyComponent {
 
   void onuijoystickdirectionchanged(Joystickvalues joystickvalues) {
     if (isdestroyed) return;
-
+    //  this.body.applyLinearImpulse(Vector2(5000,50000),this.body.worldCenter + Vector2(-10,1), true);
     uijoystickvalues.update(
         joystickvalues.variable,
         (value) => {
@@ -1591,6 +1635,7 @@ class Gameobject extends BodyComponent {
     if (isdestroyed) return;
     if (isloaded == false) return;
     actioninitiator(eevents: Eevents.step);
+
     if (istouchdown) {
       actioninitiator(eevents: Eevents.screentouchdowncontinuous);
     }
@@ -1601,7 +1646,8 @@ class Gameobject extends BodyComponent {
     }
   }
 
-  void destroyobject(Gameobject thegameobject2, String where,int thebodyindex) {
+  void destroyobject(
+      Gameobject thegameobject2, String where, int thebodyindex) {
     // print(thegame)
     // if(isdestroyed) return;
     isdestroyed = true;
@@ -1614,7 +1660,8 @@ class Gameobject extends BodyComponent {
     if (where == "bodies" && bodyindex >= gameobjectitemscore.length) {
       // actionsinitiator.bodies.removeAt(bodyindex);
     }
-    if (where == "bcomponent" && thegameobject2.bodyindex >= gameobjectitemscore.length) {
+    if (where == "bcomponent" &&
+        thegameobject2.bodyindex >= gameobjectitemscore.length) {
       // Future.delayed(Duration(seconds: 1),(){
       // bComponent.bodies.removeAt(bodyindex);
       // });
@@ -1627,14 +1674,14 @@ class Gameobject extends BodyComponent {
       // bComponent.bodies[a].box.remove(this);
 
       //  print(thegameobject2.bodyindex);
-    
-        // bComponent.bodies.remove(thet);
-        bComponent.bodies.removeWhere((key,value)=>key==thegameobject2.bodyindex);
-      
+
+      // bComponent.bodies.remove(thet);
+      bComponent.bodies
+          .removeWhere((key, value) => key == thegameobject2.bodyindex);
+
       // if (!thet.isdestroyed) {
       //   // thet.onupdate(t);
       // }
-    
 
       //     print(bComponent.bodies.length);
       //     break;
@@ -1696,6 +1743,7 @@ class Gameobject extends BodyComponent {
   @override
   void update(double t) {
     if (isdestroyed) return;
+
     if (isapplyingangular) {
       if (this.body.angularVelocity > 0) {
         if (-this.body.getAngle() < anglelimit) {
@@ -1844,6 +1892,15 @@ class Gameobject extends BodyComponent {
         canvas.drawPath(path, paint);
       }
     }
+
+    if (complifebar != null) {
+      canvas.save();
+      canvas.translate(
+          ((points[0].dx + points[2].dx + points[3].dx + points[1].dx) / 4),
+          (points[0].dy + points[3].dy + points[2].dy + points[1].dy) / 4);
+      drawlifebar(canvas);
+      canvas.restore();
+    }
   }
 
   @override
@@ -1902,6 +1959,18 @@ class Gameobject extends BodyComponent {
     if (comptext != null) {
       drawtext(canvas);
     }
+    if (complifebar != null) {
+      //  canvas.translate(
+      //     (this.body.position.x +
+      //         (gameobjectitemscore[goindex].gettransform().x) * viewport.scale +
+      //         MediaQuery.of(context).size.width / 2),
+      //     -this.body.position.y +
+      //         (gameobjectitemscore[goindex].gettransform().y) * viewport.scale +
+      //         MediaQuery.of(context).size.height / 2);
+      //  canvas.save();
+      drawlifebar(canvas);
+      // canvas.restore();
+    }
     canvas.restore();
 
     if (isdebug) {
@@ -1937,6 +2006,45 @@ class Gameobject extends BodyComponent {
       }
     }
     canvas.restore();
+  }
+
+  void drawlifebar(Canvas canvas) {
+    Paint bc = Paint()..color = Color(complifebar.backgroundcolor);
+    Paint fc = Paint()..color = Color(complifebar.foregroundcolor);
+
+    Rect therect = Rect.fromLTWH(
+        complifebar.left * viewport.scale,
+        complifebar.top * viewport.scale,
+        complifebar.width * viewport.scale,
+        complifebar.height * viewport.scale);
+    Rect therect2;
+    if (complifebar.alignment == "left") {
+      therect2 = Rect.fromLTWH(
+          complifebar.left * viewport.scale,
+          complifebar.top * viewport.scale,
+          complifebar.width *
+              viewport.scale /
+              complifebar.maxvalue *
+              complifebar.thevalue,
+          complifebar.height * viewport.scale);
+    } else {
+      therect2 = Rect.fromLTWH(
+          complifebar.left +
+              complifebar.width * viewport.scale -
+              (complifebar.width *
+                  viewport.scale /
+                  complifebar.maxvalue *
+                  complifebar.thevalue),
+          complifebar.top,
+          (complifebar.width *
+              viewport.scale /
+              complifebar.maxvalue *
+              complifebar.thevalue),
+          complifebar.height * viewport.scale);
+    }
+
+    canvas.drawRect(therect, bc);
+    canvas.drawRect(therect2, fc);
   }
 
   void drawtext(Canvas canvas) {
@@ -1992,6 +2100,7 @@ class Gameobject extends BodyComponent {
     wheeljointdef.bodyA = a;
     wheeljointdef.bodyB = b;
     wheeljointdef.localAxisA.setFrom(Vector2(1, 1));
+    // print(compboxcollider);
     wheeljointdef.localAnchorA.setFrom(Vector2(
         wheeljoint.mainx - compboxcollider.x,
         wheeljoint.mainy + compboxcollider.y));
@@ -2161,21 +2270,50 @@ class BComponent extends Box2DComponent {
       // }
     }
 
-    for (int a = 0; a < gameobjectitemscore.length; a++) {
-      for (int b = 0; b < gameobjectitemscore[a].components.length; b++) {
-        Clscomponent t = gameobjectitemscore[a].components[b];
+    // for (int a = 0; a < gameobjectitemscore.length; a++) {
+    //   for (int b = 0; b < gameobjectitemscore[a].components.length; b++) {
+    //     Clscomponent t = gameobjectitemscore[a].components[b];
+    //     if (t is Clscomprevolutejoint) {
+    //       for (int c = 0; c < bodies.length; c++) {
+    //         if (bodies[c].objectname == t.object) {
+    //           bodies[a].createRevolutejoint(bodies[a].body, bodies[c].body, t);
+    //           break;
+    //         }
+    //       }
+    //     }
+    //     if (t is Clscompwheeljoint) {
+    //       for (int c = 0; c < bodies.length; c++) {
+    //         if (bodies[c].objectname == t.object) {
+    //           bodies[a].createWheeljoint(bodies[a].body, bodies[c].body, t);
+    //           break;
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+
+    for (int a = 0; a < bodies.length; a++) {
+      Gameobject theta = bodies.values.elementAt(a);
+      for (int b = 0;
+          b < gameobjectitemscore[theta.goindex].components.length;
+          b++) {
+           
+        Clscomponent t = gameobjectitemscore[theta.goindex].components[b];
         if (t is Clscomprevolutejoint) {
           for (int c = 0; c < bodies.length; c++) {
-            if (bodies[c].objectname == t.object) {
-              bodies[a].createRevolutejoint(bodies[a].body, bodies[c].body, t);
+            Gameobject thetc = bodies.values.elementAt(c);
+            if (thetc.objectname == t.object) {
+              theta.createRevolutejoint(theta.body, thetc.body, t);
               break;
             }
           }
         }
         if (t is Clscompwheeljoint) {
+          // print(t);
           for (int c = 0; c < bodies.length; c++) {
-            if (bodies[c].objectname == t.object) {
-              bodies[a].createWheeljoint(bodies[a].body, bodies[c].body, t);
+            Gameobject thetc = bodies.values.elementAt(c);
+            if (thetc.objectname == t.object) {
+              theta.createWheeljoint(theta.body, thetc.body, t);
               break;
             }
           }
@@ -2183,12 +2321,11 @@ class BComponent extends Box2DComponent {
       }
     }
 
-for (int a = 0; a < bodies.length; a++) {
+    for (int a = 0; a < bodies.length; a++) {
       Gameobject thet = bodies.values.elementAt(a);
 
       thet.onloaded();
     }
-
 
     // bodies.forEach((key, value) {
     //   value.onloaded();
@@ -2317,8 +2454,6 @@ for (int a = 0; a < bodies.length; a++) {
 // while(it.moveNext()){
 //   it.current.ontouchdown(details);
 // }
-
-   
 
     for (int a = 0; a < bodies.length; a++) {
       Gameobject thet = bodies.values.elementAt(a);
