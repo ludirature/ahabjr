@@ -28,9 +28,9 @@ workflows:
         # set up local properties
         echo "flutter.sdk=$HOME/programs/flutter" > "$FCI_BUILD_DIR/android/local.properties"
       - cd . && flutter packages pub get
-      - cd . && flutter build apk --release
+      - cd . && flutter build apk --split-per-abi #flutter build apk --release
     artifacts:
-      - build/**/outputs/**/*.apk
+      - build/**/outputs/flutter-apk/app-release.apk
       - build/**/outputs/**/*.aab
       - build/**/outputs/**/mapping.txt
       - flutter_drive.log

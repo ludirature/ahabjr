@@ -1,6 +1,8 @@
+import 'dart:math';
 
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
+
 
 import 'package:flutter/material.dart';
 
@@ -17,7 +19,6 @@ class Gameview extends BaseGame {
   Gameview(this.context, {this.isdebug = false}) {
     initialize();
     bComponent = BComponent(context, isdebug: isdebug);
-   
 
     if (bComponent == null) return;
     bComponent.initializeWorld();
@@ -27,10 +28,12 @@ class Gameview extends BaseGame {
             Joystickvalues(0, 0, 0, 0, f.variablename));
       }
     });
+
+
     if (isdebug) {
       //
     }
-  
+
     // add(Testing());
     //  add(Testing2());
     gameisdebug = isdebug;
@@ -59,7 +62,10 @@ class Gameview extends BaseGame {
           ..color = cameragetcameracontrollercore().backgroundcolor != null
               ? Color(cameragetcameracontrollercore().backgroundcolor)
               : Colors.blueGrey);
+
+
     super.render(canvas);
+
     // print(camera_getcameracontroller().backgroundcolor);
 
     bComponent.render(canvas);

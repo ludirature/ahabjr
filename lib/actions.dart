@@ -2156,7 +2156,23 @@ class Gameobject extends BodyComponent {
             tangle,
             Offset(x, y));
 
-        shape.setAsBox(bcw / 2, bch / 2, Vector2(0, 0), 0);
+        // shape.setAsBox(bcw / 2, bch / 2, Vector2(0, 0), 0);
+
+        List<Vector2> testing2 = [
+          Vector2(-1*10.0, 2*10.0),
+          Vector2(-1*10.0, 0),
+          Vector2(0, -3*10.0),
+          Vector2(1*10.0, 0),
+          Vector2(1*10.0, 1*10.0),
+          Vector2(1*10.0, 1*10.0),
+        ];
+        // testing2[0] = Vector2(-1, 2);
+        // testing[1].setValues(-1, 0);
+        // testing[2].setValues(0, -3);
+        // testing[3].setValues(1, 0);
+        // testing[4].setValues(1, 1);
+
+        shape.set(testing2, testing2.length);
 
         fixtureDef.shape = shape;
         bodyDef.setPosition(Vector2(thep.dx, -thep.dy));
@@ -2297,7 +2313,6 @@ class BComponent extends Box2DComponent {
       for (int b = 0;
           b < gameobjectitemscore[theta.goindex].components.length;
           b++) {
-           
         Clscomponent t = gameobjectitemscore[theta.goindex].components[b];
         if (t is Clscomprevolutejoint) {
           for (int c = 0; c < bodies.length; c++) {

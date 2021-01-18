@@ -135,7 +135,7 @@ class PolygonShape extends Shape {
     n = tempCount;
     if (n < 3) {
       // Polygon is degenerate.
-      assert(false);
+      // assert(false);
       setAsBoxXY(1.0, 1.0);
       return;
     }
