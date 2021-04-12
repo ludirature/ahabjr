@@ -8,7 +8,7 @@ workflows:
     environment:
       vars:
         FCI_CLONE_UNSHALLOW: 'true'
-      flutter: stable
+      flutter: 1.22.6
       xcode: latest
       cocoapods: default
     scripts:
