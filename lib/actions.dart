@@ -183,7 +183,12 @@ class Actionsinitiator {
       checkissavevalue(scriptindex, curobjectname, si, goindex, thegameobject);
     } else if (si is Clsactloadvalue) {
       checkisloadvalue(scriptindex, curobjectname, si, goindex, thegameobject);
+    } else if (si is Clsactsavestate) {
+      checkissavestate(scriptindex, curobjectname, si, goindex, thegameobject);
+    } else if (si is Clsactloadstate) {
+      checkisloadstate(scriptindex, curobjectname, si, goindex, thegameobject);
     }
+
     if (childindex != -1) {
       Clsscriptitem si2 =
           gameobjectitemscore[goindex].getscript().components[childindex];
@@ -327,6 +332,7 @@ class Actionsinitiator {
       if (filename != null) {
         if (variable != null) {
           File variablefile = File(variablespath + "/" + filename);
+          // print(variablefile);
           String thevariable = variable;
           Map<String, dynamic> content = Map();
           for (int indvar = 0; indvar < globalvariablescore.length; indvar++) {
@@ -358,6 +364,295 @@ class Actionsinitiator {
             }
           });
         }
+      }
+    }
+  }
+
+  void checkissavestate(int scriptindex, String curobjectname, Clsscriptitem si,
+      int goindex, Gameobject thegameobject) {
+    // print(currentscenecore);
+    int asyncindex = si.getasyncindex();
+
+    if (si is Clsactsavestate) {
+      String filename = si.filename;
+      // String variable = si.variable;
+      // print(filename);
+      if (filename != null) {
+        File variablefile = File(statespath + "/" + filename);
+        // print(variablefile);
+        // String thevariable = variable;
+        Map<String, dynamic> thejson = Map();
+
+        // for (int a = gameobjectitemscore.length;
+        //     a < bComponent.bodies.length;
+        //     a++) {
+        //   // thejson.addAll({"gameobjectitem$a": gameobjectitemscore[a].toJson()});
+        //   print(bComponent.bodies[a].anglelimit);
+        // }
+        // print(bComponent.bodies.length);
+        for (int a = 0; a < bComponent.bodies.length; a++) {
+          // thejson.addAll({"gameobjectitem$a": gameobjectitemscore[a].toJson()});
+          Gameobject thet = bComponent.bodies.values.elementAt(a);
+          // print(thet.bodyindex);
+          // print(thet.goindex);
+          thejson.addAll({
+            thet.bodyindex.toString(): {
+              "goindex": thet.goindex,
+              "bodypos": {
+                "x": thet.body.position.x,
+                "y": thet.body.position.y,
+                "angle": thet.body.getAngle()
+              },
+              "bodyvelocity": {
+                "x": thet.body.linearVelocity.x,
+                "y": thet.body.linearVelocity.y,
+                "angle": thet.body.angularVelocity,
+              },
+              "objectname": thet.objectname,
+              "comptransform": thet.transformprop.toJson(),
+              "comptext": thet.comptext == null ? null : thet.comptext.toJson(),
+              "complifebar":
+                  thet.complifebar == null ? null : thet.complifebar.toJson(),
+              "firstimage": thet.firstimage,
+              "compsprite":
+                  thet.compsprite == null ? null : thet.compsprite.toJson(),
+              "comprigidbody": thet.comprigidbody == null
+                  ? null
+                  : thet.comprigidbody.toJson(),
+              "compboxcollider": thet.compboxcollider == null
+                  ? null
+                  : thet.compboxcollider.toJson(),
+              "compcirclecollider": thet.compcirclecollider == null
+                  ? null
+                  : thet.compcirclecollider.toJson(),
+              "compgameobject": thet.thegameobject.toJson(),
+              "compscript": thet.thescript.toJson()
+            }
+          });
+          // print(bComponent.bodies[a].anglelimit);
+        }
+        print(thejson);
+
+        variablefile.writeAsString(json.encode(thejson)).then((onValue) {
+          if (asyncindex != -1) {
+            Clsscriptitem si2 =
+                gameobjectitemscore[goindex].getscript().components[asyncindex];
+            getchildactions(
+                scriptindex, curobjectname, si2, goindex, thegameobject);
+          }
+        });
+      }
+    }
+  }
+
+  void checkisloadstate(int scriptindex, String curobjectname, Clsscriptitem si,
+      int goindex, Gameobject thegameobject) {
+    int asyncindex = si.getasyncindex();
+
+    if (si is Clsactloadstate) {
+      String filename = si.filename;
+      // String variable = si.variable;
+      if (filename != null) {
+        File variablefile = File(statespath + "/" + filename);
+        // variablefile.deleteSync();
+        // if (!variablefile.existsSync()) {
+        //   variablefile.writeAsStringSync(json.encode({"empty": "empty"}));
+        // }
+        variablefile.readAsString().then((onValue) {
+          // print(onValue);
+          // String thevariable = variable;
+
+          Map<String, dynamic> tojson2 = json.decode(onValue);
+
+          // print(tojson2);
+
+          actionsinitiator.isended = true;
+          bComponent.tofollow = null;
+          for (int a1 = 0; a1 < soundslistscore.length; a1++) {
+            Clscompsound t = soundslistscore[a1];
+            t.stop();
+          }
+          destroytimers();
+
+          loadprojectcore2(currentscenecore).then((onValue) {
+            for (int thea = bComponent.bodies.length - 1; thea >= 0; thea--) {
+              Gameobject thet = bComponent.bodies.values.elementAt(thea);
+              thet.destroyobject(thet, "bcomponent", thet.bodyindex);
+              // bComponent.bodies.remove(thet);
+              // bComponent.bodies.remove(thet.thegameobject.theid);
+
+            }
+
+            bComponent.bodies.clear();
+
+            bComponent.initializeWorld();
+            // print(tojson2);
+
+            for (int a = 0; a < bComponent.bodies.length; a++) {
+              // thejson.addAll({"gameobjectitem$a": gameobjectitemscore[a].toJson()});
+              Gameobject thet = bComponent.bodies.values.elementAt(a);
+
+              Map<String, dynamic> tojson2temp =
+                  tojson2[thet.bodyindex.toString()];
+
+              // ----- starting
+              Vector2 bodypos = Vector2(
+                tojson2temp['bodypos']['x'],
+                tojson2temp['bodypos']['y'],
+              );
+
+              thet.body.setTransform(bodypos, tojson2temp['bodypos']['angle']);
+
+              thet.body.linearVelocity = Vector2(
+                  tojson2temp['bodyvelocity']['x'],
+                  tojson2temp['bodyvelocity']['y']);
+
+              thet.body.angularVelocity = tojson2temp['bodyvelocity']['angle'];
+
+              thet.objectname = tojson2temp['objectname'];
+
+              thet.transformprop =
+                  Clscomptransform.fromJson(tojson2temp['comptransform']);
+
+              thet.comptext = tojson2temp['comptext'] == null
+                  ? null
+                  : Clscomptext.fromJson(tojson2temp['comptext']);
+
+              thet.complifebar = tojson2temp['complifebar'] == null
+                  ? null
+                  : Clscomplifebar.fromJson(tojson2temp['complifebar']);
+
+              thet.firstimage = tojson2temp['firstimage'];
+
+              thet.compsprite = tojson2temp['compsprite'] == null
+                  ? null
+                  : Clscompsprite.fromJson(tojson2temp['compsprite']);
+              if (thet.compsprite != null) {
+                thet.updatesprite();
+              }
+
+              thet.comprigidbody = tojson2temp['comprigidbody'] == null
+                  ? null
+                  : Clscomprigidbody.fromJson(tojson2temp['comprigidbody']);
+
+              thet.compboxcollider = tojson2temp['compboxcollider'] == null
+                  ? null
+                  : Clscompboxcollider.fromJson(tojson2temp['compboxcollider']);
+
+              thet.compcirclecollider =
+                  tojson2temp['compcirclecollider'] == null
+                      ? null
+                      : Clscompcirclecollider.fromJson(
+                          tojson2temp['compcirclecollider']);
+
+              thet.thegameobject = tojson2temp['compgameobject'] == null
+                  ? null
+                  : Clscompgameobject.fromJson(
+                      a, tojson2temp['compgameobject']);
+
+              thet.thescript = tojson2temp['compscript'] == null
+                  ? null
+                  : Clscompscript.fromJson(tojson2temp['compscript']);
+
+              thet.onloaded();
+              // --- ending
+            }
+
+            for (int a = bComponent.bodies.length; a < tojson2.length; a++) {
+              // print(tojson2[a.toString()]['goindex']);
+              // Gameobject thet = bComponent.bodies.values
+              //     .elementAt(tojson2[a.toString()]['goindex']);
+
+              int newid = objectcounters;
+              Map<String, dynamic> tojson2temp = tojson2[a.toString()];
+              Gameobject thet = Gameobject(box2d, context,
+                  tojson2temp['goindex'], objectcounters, "asdf",
+                  isdebug: bComponent.bodies[tojson2temp['goindex']] == null
+                      ? false
+                      : bComponent.bodies[tojson2temp['goindex']].isdebug,
+                  naayid: newid);
+
+              // print(thet.goindex);
+
+              bComponent.bodies.addAll({newid: thet});
+              box2d.add(thet);
+              objectcounters++;
+
+              // ----- starting
+              Vector2 bodypos = Vector2(
+                tojson2temp['bodypos']['x'],
+                tojson2temp['bodypos']['y'],
+              );
+
+              thet.body.setTransform(bodypos, tojson2temp['bodypos']['angle']);
+
+              thet.body.linearVelocity = Vector2(
+                  tojson2temp['bodyvelocity']['x'],
+                  tojson2temp['bodyvelocity']['y']);
+
+              thet.body.angularVelocity = tojson2temp['bodyvelocity']['angle'];
+              thet.objectname = tojson2temp['objectname'];
+
+              thet.transformprop =
+                  Clscomptransform.fromJson(tojson2temp['comptransform']);
+
+              thet.comptext = tojson2temp['comptext'] == null
+                  ? null
+                  : Clscomptext.fromJson(tojson2temp['comptext']);
+
+              thet.complifebar = tojson2temp['complifebar'] == null
+                  ? null
+                  : Clscomplifebar.fromJson(tojson2temp['complifebar']);
+
+              thet.firstimage = tojson2temp['firstimage'];
+
+              thet.compsprite = tojson2temp['compsprite'] == null
+                  ? null
+                  : Clscompsprite.fromJson(tojson2temp['compsprite']);
+
+              if (thet.compsprite != null) {
+                thet.updatesprite();
+              }
+
+              thet.comprigidbody = tojson2temp['comprigidbody'] == null
+                  ? null
+                  : Clscomprigidbody.fromJson(tojson2temp['comprigidbody']);
+
+              thet.compboxcollider = tojson2temp['compboxcollider'] == null
+                  ? null
+                  : Clscompboxcollider.fromJson(tojson2temp['compboxcollider']);
+
+              thet.compcirclecollider =
+                  tojson2temp['compcirclecollider'] == null
+                      ? null
+                      : Clscompcirclecollider.fromJson(
+                          tojson2temp['compcirclecollider']);
+
+              thet.thegameobject = tojson2temp['compgameobject'] == null
+                  ? null
+                  : Clscompgameobject.fromJson(
+                      a, tojson2temp['compgameobject']);
+
+              thet.thescript = tojson2temp['compscript'] == null
+                  ? null
+                  : Clscompscript.fromJson(tojson2temp['compscript']);
+
+              thet.onloaded();
+              // --- ending
+            }
+
+            refreshuicomponents();
+            actionsinitiator.isended = false;
+
+            if (asyncindex != -1) {
+              Clsscriptitem si2 = gameobjectitemscore[goindex]
+                  .getscript()
+                  .components[asyncindex];
+              getchildactions(
+                  scriptindex, curobjectname, si2, goindex, thegameobject);
+            }
+          });
+        });
       }
     }
   }
@@ -1020,6 +1315,7 @@ class Actionsinitiator {
         if (t.objectname ==
             gameobjectitemscore[indcreate].getgameobject().name) {
           int newid = objectcounters;
+          // print("newid" + newid.toString());
           Gameobject temp = Gameobject(
               box2d, context, indcreate, objectcounters, t.objectname,
               isdebug: bComponent.bodies[indcreate] == null
@@ -1027,18 +1323,8 @@ class Actionsinitiator {
                   : bComponent.bodies[indcreate].isdebug,
               naayid: newid);
 
-          // print("asdf");
-//  print(temp.objectname);
-          // bodies.add(temp);
-          // print(bComponent.generateobjectid());
-
-          // print(newid);
-          // temp.thegameobject.theid = newid;
           bComponent.bodies.addAll({newid: temp});
-          // bComponent.bodies.putIfAbsent(newid, ()=>temp);
-          // bComponent.toaddtouchdown.addAll({newid: temp});
-
-          // print()
+          // print(indcreate);
 
           box2d.add(temp);
           objectcounters++;
@@ -1115,7 +1401,7 @@ class Actionsinitiator {
             temp.body.setTransform(Vector2(posx, posy), temp.body.getAngle());
             temp.body.linearVelocity = Vector2(velx, vely);
           }
-
+          // print(bComponent.bodies.length.toString() + "    length");
           temp.onloaded();
           break;
         }
@@ -1155,16 +1441,6 @@ class Actionsinitiator {
           }
         }
       });
-
-      // for (int indcreate = 0;
-      //     indcreate < bComponent.bodies.length;
-      //     indcreate++) {
-      //   if (t.objectname == bComponent.bodies[indcreate].objectname &&
-      //       !bComponent.bodies[indcreate].isdestroyed) {
-
-      //     break;
-      //   }
-      // }
     } else if (t is Clsactsettext) {
       if (t.text != null) {
         thegameobject.comptext.text = t.text;
@@ -1355,14 +1631,14 @@ class Actionsinitiator {
   }
 }
 
-int objectcounters = 0;
+int objectcounters = 10000;
 
 class Gameobject extends BodyComponent {
   // bool isimageresolved = false;
   ui.Image theimage;
   int goindex;
   BuildContext context;
-  double tempy = 0;
+  // double tempy = 0;
   bool ismanaapply = false;
   bool isapplyingangular = false;
   double anglelimit = 0;

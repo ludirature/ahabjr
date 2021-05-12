@@ -23,7 +23,7 @@ Xyz gyroscopevalue = Xyz();
 int objectcount = 0;
 
 class Clsgameobjectitem {
-  List<Clscomponent> components = List();
+  List<Clscomponent> components = [];
   Clsgameobjectitem({this.components});
 
   Map<String, dynamic> toJson() {
@@ -573,7 +573,7 @@ class Clscompgameobject extends Clscomponent {
     String ischild = json['ischild'];
     int theid;
     if (json['theid'] == null) {
-      print("asdfasfasdfasdf");
+      // print("asdfasfasdfasdf");
       theid = theobjectcount;
     } else {
       theid = json['theid'];
@@ -993,6 +993,12 @@ class Clscompscript extends Clscomponent {
       if (t is Clsactloadvalue) {
         thelist.addAll({"actloadvalue$a": t.toJson()});
       }
+      if (t is Clsactsavestate) {
+        thelist.addAll({"actsavestate$a": t.toJson()});
+      }
+      if (t is Clsactloadstate) {
+        thelist.addAll({"actloadstate$a": t.toJson()});
+      }
       if (t is Clsactsetvariable) {
         thelist.addAll({"actsetvariable$a": t.toJson()});
       }
@@ -1082,6 +1088,12 @@ class Clscompscript extends Clscomponent {
       }
       if (key.contains("actsetvariable")) {
         components2.add(Clsactsetvariable.fromJson(value));
+      }
+      if (key.contains("actsavestate")) {
+        components2.add(Clsactsavestate.fromJson(value));
+      }
+      if (key.contains("actloadstate")) {
+        components2.add(Clsactloadstate.fromJson(value));
       }
       if (key.contains("actsavevalue")) {
         components2.add(Clsactsavevalue.fromJson(value));
@@ -1299,6 +1311,31 @@ class Clsscriptitem {
         return t.vswidth;
       }
     }
+    if (t is Clsactsavestate) {
+      if (whattoget == "pos") {
+        if (t.vsPosX == null || t.vsPosY == null) {
+          return Offset(0, 0);
+        }
+        return Offset(t.vsPosX, t.vsPosY);
+      } else if (whattoget == "childindex") {
+        return t.childindex;
+      } else if (whattoget == "vswidth") {
+        return t.vswidth;
+      }
+    }
+    if (t is Clsactloadstate) {
+      if (whattoget == "pos") {
+        if (t.vsPosX == null || t.vsPosY == null) {
+          return Offset(0, 0);
+        }
+        return Offset(t.vsPosX, t.vsPosY);
+      } else if (whattoget == "childindex") {
+        return t.childindex;
+      } else if (whattoget == "vswidth") {
+        return t.vswidth;
+      }
+    }
+
     if (t is Clsactrestartscene) {
       if (whattoget == "pos") {
         if (t.vsPosX == null || t.vsPosY == null) {
@@ -1456,6 +1493,38 @@ class Clsscriptitem {
       }
     }
     if (t is Clsactloadvalue) {
+      if (whattoget == "pos") {
+        if (t.vsPosX == null || t.vsPosY == null) {
+          return Offset(0, 0);
+        }
+        return Offset(t.vsPosX, t.vsPosY);
+      } else if (whattoget == "childindex") {
+        return t.childindex;
+      } else if (whattoget == "vswidth") {
+        return t.vswidth;
+      } else if (whattoget == "isasync") {
+        return true;
+      } else if (whattoget == "asyncindex") {
+        return t.asyncindex;
+      }
+    }
+    if (t is Clsactsavestate) {
+      if (whattoget == "pos") {
+        if (t.vsPosX == null || t.vsPosY == null) {
+          return Offset(0, 0);
+        }
+        return Offset(t.vsPosX, t.vsPosY);
+      } else if (whattoget == "childindex") {
+        return t.childindex;
+      } else if (whattoget == "vswidth") {
+        return t.vswidth;
+      } else if (whattoget == "isasync") {
+        return true;
+      } else if (whattoget == "asyncindex") {
+        return t.asyncindex;
+      }
+    }
+    if (t is Clsactloadstate) {
       if (whattoget == "pos") {
         if (t.vsPosX == null || t.vsPosY == null) {
           return Offset(0, 0);
@@ -1799,6 +1868,30 @@ class Clsscriptitem {
       }
     }
     if (t is Clsactloadvalue) {
+      if (whattoset == "pos") {
+        t.vsPosX = value.dx;
+        t.vsPosY = value.dy;
+      }
+      if (whattoset == "childindex") {
+        t.childindex = value;
+      }
+      if (whattoset == "asyncindex") {
+        t.asyncindex = value;
+      }
+    }
+    if (t is Clsactsavestate) {
+      if (whattoset == "pos") {
+        t.vsPosX = value.dx;
+        t.vsPosY = value.dy;
+      }
+      if (whattoset == "childindex") {
+        t.childindex = value;
+      }
+      if (whattoset == "asyncindex") {
+        t.asyncindex = value;
+      }
+    }
+    if (t is Clsactloadstate) {
       if (whattoset == "pos") {
         t.vsPosX = value.dx;
         t.vsPosY = value.dy;
@@ -2751,6 +2844,60 @@ class Clsactloadvalue extends Clsscriptitem {
         variable = json['variable'];
 }
 
+class Clsactsavestate extends Clsscriptitem {
+  double vsPosX = 0;
+  double vsPosY = 0;
+  int childindex = -1;
+  int asyncindex = -1;
+  double vswidth = 150;
+  String filename;
+
+  Clsactsavestate();
+  Map<String, dynamic> toJson() {
+    return {
+      "vsPosX": this.vsPosX,
+      "vsPosY": this.vsPosY,
+      "childindex": this.childindex,
+      "filename": this.filename,
+      "asyncindex": this.asyncindex,
+    };
+  }
+
+  Clsactsavestate.fromJson(Map<String, dynamic> json)
+      : vsPosX = json['vsPosX'],
+        vsPosY = json['vsPosY'],
+        childindex = json['childindex'],
+        filename = json['filename'],
+        asyncindex = json['asyncindex'];
+}
+
+class Clsactloadstate extends Clsscriptitem {
+  double vsPosX = 0;
+  double vsPosY = 0;
+  int childindex = -1;
+  int asyncindex = -1;
+  double vswidth = 150;
+  String filename;
+
+  Clsactloadstate();
+  Map<String, dynamic> toJson() {
+    return {
+      "vsPosX": this.vsPosX,
+      "vsPosY": this.vsPosY,
+      "childindex": this.childindex,
+      "asyncindex": this.asyncindex,
+      "filename": this.filename,
+    };
+  }
+
+  Clsactloadstate.fromJson(Map<String, dynamic> json)
+      : vsPosX = json['vsPosX'],
+        vsPosY = json['vsPosY'],
+        childindex = json['childindex'],
+        asyncindex = json['asyncindex'],
+        filename = json['filename'];
+}
+
 class Clsactbooleanexpression extends Clsscriptitem {
   String expexpression;
 
@@ -3031,6 +3178,7 @@ class Clscompprojectsettings extends Clssettings {
   String optimization = "smooth";
   String imagequality = "low";
   int appversion = 0;
+  double gridspacing = 32;
   Clscompprojectsettings(
       {this.usinggyroscope = false,
       this.orientation,
@@ -3046,6 +3194,7 @@ class Clscompprojectsettings extends Clssettings {
       this.optimization = "smooth",
       this.imagequality = "low",
       this.appversion = 0,
+      this.gridspacing = 32,
       this.playgroundid = ""});
   Map<String, dynamic> toJson() {
     return {
@@ -3058,6 +3207,7 @@ class Clscompprojectsettings extends Clssettings {
       "version": this.version,
       "orientation": this.orientation,
       "icon": this.icon,
+      "gridspacing": this.gridspacing,
       "optimization": this.optimization,
       "opensource": this.opensource,
       "appversion": this.appversion,
@@ -3076,6 +3226,7 @@ class Clscompprojectsettings extends Clssettings {
         projectname = json['projectname'],
         version = json['version'],
         icon = json['icon'],
+        gridspacing = json['gridspacing'] == null ? 8 : json['gridspacing'],
         repositorylink = json['repositorylink'],
         opensource = json['opensource'],
         playgroundid = json['playgroundid'],

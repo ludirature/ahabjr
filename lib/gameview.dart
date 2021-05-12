@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 
-
 import 'package:flutter/material.dart';
 
 import 'package:flutter/gestures.dart';
@@ -29,13 +28,12 @@ class Gameview extends BaseGame {
       }
     });
 
-
     if (isdebug) {
       //
     }
 
-    // add(Testing());
-    //  add(Testing2());
+    
+    
     gameisdebug = isdebug;
   }
 
@@ -62,7 +60,6 @@ class Gameview extends BaseGame {
           ..color = cameragetcameracontrollercore().backgroundcolor != null
               ? Color(cameragetcameracontrollercore().backgroundcolor)
               : Colors.blueGrey);
-
 
     super.render(canvas);
 

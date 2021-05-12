@@ -16,17 +16,19 @@ String imagespath = "";
 String soundspath = "";
 String scenespath = "";
 String variablespath = "";
+String statespath = "";
 String projpathcore = "";
+String currentscenecore = "scene1";
 
 String physicalmemory = "";
 String virtualmemory = "";
 bool isInteger(num value) => (value % 1) == 0;
-List<Clsgameobjectitem> gameobjectitemscore = List();
-List<Clscameracomponent> cameracomponentscore = List();
-List<Clssettings> projectsettingscore = List();
-List<Clsvariable> globalvariablescore = List();
-List<Clssoundcomponent> soundslistscore = List();
-List<Clsuicomponent> uicomponentscore = List();
+List<Clsgameobjectitem> gameobjectitemscore = [];
+List<Clscameracomponent> cameracomponentscore = [];
+List<Clssettings> projectsettingscore = [];
+List<Clsvariable> globalvariablescore = [];
+List<Clssoundcomponent> soundslistscore = [];
+List<Clsuicomponent> uicomponentscore = [];
 
 Function refreshuicomponents;
 
@@ -35,7 +37,7 @@ bool isprojectloaded = false;
 ui.Image noimage;
 
 bool isdefloaded = false;
-bool gameisdebug;
+bool gameisdebug = false;
 
 Gameview gv;
 
@@ -169,6 +171,7 @@ bool checkvariableduplicatelocal(List<dynamic> whatglobalvariable,
 }
 
 Future loadprojectcore(String scenename) async {
+  currentscenecore = scenename;
   // print(projpath);
   File file = File(projpathcore + "/scenes/" + scenename + ".mobilegameengine");
 
@@ -218,6 +221,13 @@ Future loadprojectcore(String scenename) async {
   }
 
   variablespath = asdf.path;
+
+  Directory asdf2 = Directory(projpathcore + "/tempstates");
+
+  if (!asdf2.existsSync()) {
+    asdf2.createSync();
+  }
+  statespath = asdf2.path;
 }
 
 Future loadprojectsettings() async {
@@ -238,6 +248,8 @@ Future loadprojectsettings() async {
 }
 
 Future loadprojectcore2(String scenename) async {
+  currentscenecore = scenename;
+  print(currentscenecore);
   File file = File(projpathcore + "/scenes/" + scenename + ".mobilegameengine");
 
   String contents = await file.readAsString();
@@ -431,5 +443,7 @@ String getCardinal(double angle) {
                       ? "S"
                       : (degrees >= 202.5 && degrees <= 247.5)
                           ? "SW"
-                          : (degrees >= 247.5 && degrees <= 292.5) ? "W" : "NW";
+                          : (degrees >= 247.5 && degrees <= 292.5)
+                              ? "W"
+                              : "NW";
 }

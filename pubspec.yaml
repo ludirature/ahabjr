@@ -98,6 +98,30 @@ flutter:
     - family: pricedownbl
       fonts:
         - asset: assets/fonts/pricedown bl.ttf
+    - family: garamond
+      fonts:
+        - asset: assets/fonts/garamond.ttf
+    - family: heycomic
+      fonts:
+        - asset: assets/fonts/heycomic.ttf
+    - family: typewriter
+      fonts:
+        - asset: assets/fonts/typewriter.ttf
+    - family: minecraft
+      fonts:
+        - asset: assets/fonts/minecraft.ttf
+    - family: pusab
+      fonts:
+        - asset: assets/fonts/pusab.otf
+    - family: elfboyclassic
+      fonts:
+        - asset: assets/fonts/elfboyclassic.ttf
+    - family: cherrybomb
+      fonts:
+        - asset: assets/fonts/cherrybomb.otf
+    - family: gameover
+      fonts:
+        - asset: assets/fonts/gameover.ttf
   # fonts:
   #   - family: Schyler
   #     fonts:

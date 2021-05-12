@@ -105,7 +105,6 @@ class _GameplayerState extends State<Gameplayer> {
       stop();
     }
 
-
     gameobjectitemscore.clear();
     cameracomponentscore.clear();
     globalvariablescore.clear();
@@ -127,7 +126,6 @@ class _GameplayerState extends State<Gameplayer> {
 
     return Scaffold(
       backgroundColor: Color(0xFF2A2E49),
-      resizeToAvoidBottomPadding: false,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
@@ -229,7 +227,6 @@ class _TheUIcomponentsState extends State<TheUIcomponents> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Stack(
         children: List.generate(uicomponentscore.length, (index) {
       Clsuicomponent t = uicomponentscore[index];
@@ -354,7 +351,6 @@ Widget theuibutton(Clsuibutton t) {
       double screenheight = MediaQuery.of(playercontext).size.height;
       double screenwidth = MediaQuery.of(playercontext).size.width;
 
-
       double top = t.postop;
       double bottom = t.posbottom;
       double left = t.posleft;
@@ -375,8 +371,8 @@ Widget theuibutton(Clsuibutton t) {
           isnaa = true;
         }
       }
-      if (isnaa==false) {
-         buttononcancel(t);
+      if (isnaa == false) {
+        buttononcancel(t);
       }
     },
     child: Transform.scale(
