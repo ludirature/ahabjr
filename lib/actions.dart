@@ -9,6 +9,7 @@ import 'package:flame/components/mixins/tapable.dart';
 import 'package:flutter/material.dart';
 // import 'package:mobilegameengine/gamecore/lib/compandactvariables.dart';
 
+import 'admobads2.dart';
 import 'compandactvariables.dart';
 import 'globalvars.dart';
 import 'package:box2d_flame/box2d.dart';
@@ -16,6 +17,8 @@ import 'package:box2d_flame/box2d.dart';
 import 'dart:ui' as ui;
 import 'dart:convert';
 import 'dart:math' as math;
+
+bool isbanneradshowing = false;
 
 Actionsinitiator actionsinitiator = Actionsinitiator();
 BComponent bComponent;
@@ -66,15 +69,6 @@ class MyContactListener extends ContactListener {
       if (object1 == userdataA['objectname'] &&
           thegameobject.bodyindex == userdataA['bodyindex']) {
         if (object2 == userdataB['objectname']) {
-//  print("        ");
-//       print("        ");
-//       print("        ");
-//       print(object1 + "  " + userdataA['objectname']);
-//       print(thegameobject.bodyindex.toString() + "      " + userdataA['bodyindex'].toString());
-//       print(object2 + "    " + userdataB['objectname']);
-//       print("        ");
-//       print("        ");
-//       print("        ");
           return true;
         }
       }
@@ -454,17 +448,9 @@ class Actionsinitiator {
       // String variable = si.variable;
       if (filename != null) {
         File variablefile = File(statespath + "/" + filename);
-        // variablefile.deleteSync();
-        // if (!variablefile.existsSync()) {
-        //   variablefile.writeAsStringSync(json.encode({"empty": "empty"}));
-        // }
+
         variablefile.readAsString().then((onValue) {
-          // print(onValue);
-          // String thevariable = variable;
-
           Map<String, dynamic> tojson2 = json.decode(onValue);
-
-          // print(tojson2);
 
           actionsinitiator.isended = true;
           bComponent.tofollow = null;
@@ -478,18 +464,13 @@ class Actionsinitiator {
             for (int thea = bComponent.bodies.length - 1; thea >= 0; thea--) {
               Gameobject thet = bComponent.bodies.values.elementAt(thea);
               thet.destroyobject(thet, "bcomponent", thet.bodyindex);
-              // bComponent.bodies.remove(thet);
-              // bComponent.bodies.remove(thet.thegameobject.theid);
-
             }
 
             bComponent.bodies.clear();
 
             bComponent.initializeWorld();
-            // print(tojson2);
 
             for (int a = 0; a < bComponent.bodies.length; a++) {
-              // thejson.addAll({"gameobjectitem$a": gameobjectitemscore[a].toJson()});
               Gameobject thet = bComponent.bodies.values.elementAt(a);
 
               Map<String, dynamic> tojson2temp =
@@ -503,11 +484,14 @@ class Actionsinitiator {
 
               thet.body.setTransform(bodypos, tojson2temp['bodypos']['angle']);
 
-              thet.body.linearVelocity = Vector2(
-                  tojson2temp['bodyvelocity']['x'],
-                  tojson2temp['bodyvelocity']['y']);
+              if (si.ignorephysics == false) {
+                thet.body.linearVelocity = Vector2(
+                    tojson2temp['bodyvelocity']['x'],
+                    tojson2temp['bodyvelocity']['y']);
 
-              thet.body.angularVelocity = tojson2temp['bodyvelocity']['angle'];
+                thet.body.angularVelocity =
+                    tojson2temp['bodyvelocity']['angle'];
+              }
 
               thet.objectname = tojson2temp['objectname'];
 
@@ -554,7 +538,7 @@ class Actionsinitiator {
                   ? null
                   : Clscompscript.fromJson(tojson2temp['compscript']);
 
-              thet.onloaded();
+              // thet.onloaded();
               // --- ending
             }
 
@@ -586,11 +570,14 @@ class Actionsinitiator {
 
               thet.body.setTransform(bodypos, tojson2temp['bodypos']['angle']);
 
-              thet.body.linearVelocity = Vector2(
-                  tojson2temp['bodyvelocity']['x'],
-                  tojson2temp['bodyvelocity']['y']);
+              if (si.ignorephysics == false) {
+                thet.body.linearVelocity = Vector2(
+                    tojson2temp['bodyvelocity']['x'],
+                    tojson2temp['bodyvelocity']['y']);
 
-              thet.body.angularVelocity = tojson2temp['bodyvelocity']['angle'];
+                thet.body.angularVelocity =
+                    tojson2temp['bodyvelocity']['angle'];
+              }
               thet.objectname = tojson2temp['objectname'];
 
               thet.transformprop =
@@ -633,11 +620,11 @@ class Actionsinitiator {
                   : Clscompgameobject.fromJson(
                       a, tojson2temp['compgameobject']);
 
-              thet.thescript = tojson2temp['compscript'] == null
-                  ? null
-                  : Clscompscript.fromJson(tojson2temp['compscript']);
+              // thet.thescript = tojson2temp['compscript'] == null
+              //     ? null
+              //     : Clscompscript.fromJson(tojson2temp['compscript']);
 
-              thet.onloaded();
+              // thet.onloaded();
               // --- ending
             }
 
@@ -1324,6 +1311,7 @@ class Actionsinitiator {
               naayid: newid);
 
           bComponent.bodies.addAll({newid: temp});
+
           // print(indcreate);
 
           box2d.add(temp);
@@ -1473,6 +1461,59 @@ class Actionsinitiator {
       if (t.textcolor != null) {
         thegameobject.comptext.textcolor = t.textcolor;
       }
+    } else if (t is Clsactsetadvertisement) {
+      // print(t);
+
+      if (t.action == "show") {
+        // if(uicomponentscore)
+        if (!isbanneradshowing) {
+          isbanneradshowing = true;
+          if (theads2.anchor == "top") {
+            theads2.showBannerAd(true);
+          } else if (theads2.anchor == "bottom") {
+            theads2.showBannerAd(false);
+          }
+        }
+      }
+      if (t.action == "hide") {
+        if (isbanneradshowing) {
+          isbanneradshowing = false;
+          theads2.hideBannerAd();
+        }
+      }
+      // print("aasdfasdfasdfasdf");
+
+      // if (t.text != null) {
+      //   thegameobject.comptext.text = t.text;
+      // } else if (t.exptext != null) {
+      //   String thevariable = t.exptext;
+
+      //   for (int indvar = 0; indvar < globalvariablescore.length; indvar++) {
+      //     Clsvariable t2 = globalvariablescore[indvar];
+      //     if (t2 is Clsvariablenumber) {
+      //       if (t2.name == thevariable) {
+      //         if (isInteger(t2.value)) {
+      //           thegameobject.comptext.text = t2.value.toStringAsFixed(0);
+      //         } else {
+      //           thegameobject.comptext.text = t2.value.toStringAsFixed(2);
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
+      // if (!t.blurradius.isNaN) {
+      //   thegameobject.comptext.blurradius = t.blurradius;
+      // }
+      // if (t.fontfamily != null) {
+      //   thegameobject.comptext.fontfamily = t.fontfamily;
+      // }
+      // // print(t.fontsize);
+      // if (!t.fontsize.isNaN) {
+      //   thegameobject.comptext.fontsize = t.fontsize;
+      // }
+      // if (t.textcolor != null) {
+      //   thegameobject.comptext.textcolor = t.textcolor;
+      // }
     } else if (t is Clsactsetlifebar) {
       if (!t.thevalue.isNaN || t.expthevalue != null) {
         if (t.expthevalue == null) {
@@ -2539,6 +2580,7 @@ class BComponent extends Box2DComponent {
   Gameobject tofollow;
   @override
   void initializeWorld() {
+    isbanneradshowing = false;
     cameracontroller = cameragetcameracontrollercore();
     // print("asdfasdfasdfasdfasdfasdfasdf");
     objectcounters = 0;

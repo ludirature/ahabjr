@@ -945,6 +945,9 @@ class Clscompscript extends Clscomponent {
       if (t is Clscomponjoystick) {
         thelist.addAll({"componjoystick$a": t.toJson()});
       }
+      if (t is Clscompadbanner) {
+        thelist.addAll({"compadbanner$a": t.toJson()});
+      }
       if (t is Clscomponobjectloaded) {
         thelist.addAll({"componobjectloaded$a": t.toJson()});
       }
@@ -956,6 +959,9 @@ class Clscompscript extends Clscomponent {
       }
       if (t is Clsactsettransform) {
         thelist.addAll({"actsettransform$a": t.toJson()});
+      }
+      if (t is Clsactsetadvertisement) {
+        thelist.addAll({"actsetadvertisement$a": t.toJson()});
       }
       if (t is Clsactiscollidingwith) {
         thelist.addAll({"actiscollidingwith$a": t.toJson()});
@@ -1044,6 +1050,9 @@ class Clscompscript extends Clscomponent {
       if (key.contains("componjoystick")) {
         components2.add(Clscomponjoystick.fromJson((value)));
       }
+      if (key.contains("compadbanner")) {
+        components2.add(Clscompadbanner.fromJson((value)));
+      }
       if (key.contains("componobjectloaded")) {
         components2.add(Clscomponobjectloaded.fromJson(value));
       }
@@ -1055,6 +1064,9 @@ class Clscompscript extends Clscomponent {
       }
       if (key.contains("actsettransform")) {
         components2.add(Clsactsettransform.fromJson(value));
+      }
+      if (key.contains("actsetadvertisement")) {
+        components2.add(Clsactsetadvertisement.fromJson(value));
       }
       if (key.contains("actiscollidingwith")) {
         components2.add(Clsactiscollidingwith.fromJson(value));
@@ -1276,6 +1288,18 @@ class Clsscriptitem {
       }
     }
     if (t is Clsactsettransform) {
+      if (whattoget == "pos") {
+        if (t.vsPosX == null || t.vsPosY == null) {
+          return Offset(0, 0);
+        }
+        return Offset(t.vsPosX, t.vsPosY);
+      } else if (whattoget == "childindex") {
+        return t.childindex;
+      } else if (whattoget == "vswidth") {
+        return t.vswidth;
+      }
+    }
+    if (t is Clsactsetadvertisement) {
       if (whattoget == "pos") {
         if (t.vsPosX == null || t.vsPosY == null) {
           return Offset(0, 0);
@@ -1524,6 +1548,7 @@ class Clsscriptitem {
         return t.asyncindex;
       }
     }
+
     if (t is Clsactloadstate) {
       if (whattoget == "pos") {
         if (t.vsPosX == null || t.vsPosY == null) {
@@ -1758,6 +1783,7 @@ class Clsscriptitem {
         t.childindex = value;
       }
     }
+
     if (t is Clsactiscollidingwith) {
       if (whattoset == "pos") {
         t.vsPosX = value.dx;
@@ -1822,6 +1848,15 @@ class Clsscriptitem {
       }
     }
     if (t is Clscomponjoystick) {
+      if (whattoset == "pos") {
+        t.vsPosX = value.dx;
+        t.vsPosY = value.dy;
+      }
+      if (whattoset == "childindex") {
+        t.childindex = value;
+      }
+    }
+    if (t is Clsactsetadvertisement) {
       if (whattoset == "pos") {
         t.vsPosX = value.dx;
         t.vsPosY = value.dy;
@@ -1924,6 +1959,35 @@ class Clsscriptitem {
   void setasyncindex(int index) {
     setproperties(index, "asyncindex");
   }
+}
+
+class Clscompadbanner extends Clsscriptitem {
+  String variable;
+  String joystickevent;
+
+  double vsPosX = 0;
+  double vsPosY = 0;
+  int childindex = -1;
+  double vswidth = 160;
+
+  Clscompadbanner({this.variable, this.joystickevent});
+
+  Map<String, dynamic> toJson() {
+    return {
+      "variable": this.variable,
+      "joystickevent": this.joystickevent,
+      "vsPosX": this.vsPosX,
+      "vsPosY": this.vsPosY,
+      "childindex": this.childindex
+    };
+  }
+
+  Clscompadbanner.fromJson(Map<String, dynamic> json)
+      : variable = json['variable'],
+        joystickevent = json['joystickevent'],
+        vsPosX = json['vsPosX'],
+        vsPosY = json['vsPosY'],
+        childindex = json['childindex'];
 }
 
 class Clscomponjoystick extends Clsscriptitem {
@@ -2108,6 +2172,38 @@ class Clsactsetvelocity extends Clsscriptitem {
         expy = json['expy'],
         expanglelimit = json['expanglelimit'],
         expangular = json['expangular'],
+        vsPosX = json['vsPosX'],
+        vsPosY = json['vsPosY'],
+        childindex = json['childindex'];
+}
+
+class Clsactsetadvertisement extends Clsscriptitem {
+  String network;
+  String adtype;
+  String action;
+  // String expanglelimit;
+
+  double vsPosX = 0;
+  double vsPosY = 0;
+  int childindex = -1;
+  double vswidth = 150;
+
+  Clsactsetadvertisement({this.network, this.adtype, this.action});
+  Map<String, dynamic> toJson() {
+    return {
+      "network": this.network,
+      "adtype": this.adtype,
+      "action": this.action,
+      "vsPosX": this.vsPosX,
+      "vsPosY": this.vsPosY,
+      "childindex": this.childindex,
+    };
+  }
+
+  Clsactsetadvertisement.fromJson(Map<String, dynamic> json)
+      : network = json['network'],
+        adtype = json['adtype'],
+        action = json['action'],
         vsPosX = json['vsPosX'],
         vsPosY = json['vsPosY'],
         childindex = json['childindex'];
@@ -2878,6 +2974,7 @@ class Clsactloadstate extends Clsscriptitem {
   int asyncindex = -1;
   double vswidth = 150;
   String filename;
+  bool ignorephysics = false;
 
   Clsactloadstate();
   Map<String, dynamic> toJson() {
@@ -2887,6 +2984,7 @@ class Clsactloadstate extends Clsscriptitem {
       "childindex": this.childindex,
       "asyncindex": this.asyncindex,
       "filename": this.filename,
+      "ignorephysics": this.ignorephysics
     };
   }
 
@@ -2895,6 +2993,7 @@ class Clsactloadstate extends Clsscriptitem {
         vsPosY = json['vsPosY'],
         childindex = json['childindex'],
         asyncindex = json['asyncindex'],
+        ignorephysics = json['ignorephysics'],
         filename = json['filename'];
 }
 
@@ -3179,6 +3278,7 @@ class Clscompprojectsettings extends Clssettings {
   String imagequality = "low";
   int appversion = 0;
   double gridspacing = 32;
+  String admobapplicationid = "";
   Clscompprojectsettings(
       {this.usinggyroscope = false,
       this.orientation,
@@ -3195,6 +3295,7 @@ class Clscompprojectsettings extends Clssettings {
       this.imagequality = "low",
       this.appversion = 0,
       this.gridspacing = 32,
+      this.admobapplicationid,
       this.playgroundid = ""});
   Map<String, dynamic> toJson() {
     return {
@@ -3213,6 +3314,7 @@ class Clscompprojectsettings extends Clssettings {
       "appversion": this.appversion,
       "repositorylink": this.repositorylink,
       "playgroundid": this.playgroundid,
+      "admobapplicationid": this.admobapplicationid,
       "imagequality": this.imagequality,
     };
   }
@@ -3231,6 +3333,9 @@ class Clscompprojectsettings extends Clssettings {
         opensource = json['opensource'],
         playgroundid = json['playgroundid'],
         orientation = json['orientation'],
+        admobapplicationid = json['admobapplicationid'] == null
+            ? ""
+            : json['admobapplicationid'],
         appversion = json['appversion'] == null ? 0 : json['appversion'],
         optimization =
             json['optimization'] == null ? "smooth" : json['optimization'],
@@ -3238,24 +3343,24 @@ class Clscompprojectsettings extends Clssettings {
             json['imagequality'] == null ? "low" : json['imagequality'];
 }
 
-class Clsworkspacesettings extends Clssettings {
-  bool showgrid;
-  bool aligngrid;
-  double gridvalue;
-  Clsworkspacesettings({this.showgrid, this.aligngrid, this.gridvalue});
-  Map<String, dynamic> toJson() {
-    return {
-      "showgrid": this.showgrid,
-      "aligngrid": this.aligngrid,
-      "gridvalue": this.gridvalue
-    };
-  }
+// class Clsworkspacesettings extends Clssettings {
+//   bool showgrid;
+//   bool aligngrid;
+//   double gridvalue;
+//   Clsworkspacesettings({this.showgrid, this.aligngrid, this.gridvalue});
+//   Map<String, dynamic> toJson() {
+//     return {
+//       "showgrid": this.showgrid,
+//       "aligngrid": this.aligngrid,
+//       "gridvalue": this.gridvalue
+//     };
+//   }
 
-  Clsworkspacesettings.fromJson(Map<String, dynamic> json)
-      : showgrid = json['showgrid'],
-        aligngrid = json['aligngrid'],
-        gridvalue = json['gridvalue'];
-}
+//   Clsworkspacesettings.fromJson(Map<String, dynamic> json)
+//       : showgrid = json['showgrid'],
+//         aligngrid = json['aligngrid'],
+//         gridvalue = json['gridvalue'];
+// }
 
 List<Clsuicomponent> uicomponents = List();
 
@@ -3315,6 +3420,35 @@ class Clsuijoystickdirectional extends Clsuicomponent {
         posbottom = fromjsondouble(json['posbottom']),
         posleft = fromjsondouble(json['posleft']),
         variablename = json['variablename'];
+}
+
+class Clsuiadbanner extends Clsuicomponent {
+  String network;
+  String bannerid;
+  String anchor;
+  String bannersize;
+
+  Clsuiadbanner({
+    this.network = "admob",
+    this.bannerid,
+    this.anchor = "bottom",
+    this.bannersize = "banner",
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      "network": this.network,
+      "bannerid": this.bannerid,
+      "anchor": this.anchor,
+      "bannersize": this.bannersize
+    };
+  }
+
+  Clsuiadbanner.fromJson(Map<String, dynamic> json)
+      : bannersize = json['bannersize'],
+        anchor = json['anchor'],
+        bannerid = json['bannerid'] == null ? "" : json['bannerid'],
+        network = json['network'];
 }
 
 class Buttonvalues {

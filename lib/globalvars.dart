@@ -209,8 +209,8 @@ Future loadprojectcore(String scenename) async {
     if (key.contains('uijoystickdirectional')) {
       uicomponentscore.add(Clsuijoystickdirectional.fromJson(value));
     }
-    if (key.contains('uibutton')) {
-      uicomponentscore.add(Clsuibutton.fromJson(value));
+    if (key.contains('uiadbanner')) {
+      uicomponentscore.add(Clsuiadbanner.fromJson(value));
     }
   });
 
@@ -292,8 +292,8 @@ Future loadprojectcore2(String scenename) async {
     if (key.contains('uijoystickdirectional')) {
       uicomponentscore.add(Clsuijoystickdirectional.fromJson(value));
     }
-    if (key.contains('uibutton')) {
-      uicomponentscore.add(Clsuibutton.fromJson(value));
+    if (key.contains('uiadbanner')) {
+      uicomponentscore.add(Clsuiadbanner.fromJson(value));
     }
   });
 

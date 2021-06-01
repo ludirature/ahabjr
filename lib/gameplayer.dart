@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'admobads2.dart';
 import 'compandactvariables.dart';
 import 'gameview.dart';
 
@@ -56,12 +57,14 @@ class _GameplayerState extends State<Gameplayer> {
   @override
   void initState() {
     isprojectloaded = false;
-    loadprojectsettings().then((onValue) {
+
+    loadprojectsettings().then((onValue) async {
       if (getprojectsettingscore().orientation == "portrait") {
         Flame.util.setPortrait();
       } else if (getprojectsettingscore().orientation == "landscape") {
         Flame.util.setLandscape();
       }
+      await theads2.initialize(widget.isdebug);
       loadprojectcore(widget.isplayground
               ? getprojectsettingscore().startingscene
               : widget.currentscene)
@@ -91,6 +94,7 @@ class _GameplayerState extends State<Gameplayer> {
       gyroscopevalue.y = event.y;
       gyroscopevalue.z = event.z;
     });
+
     super.initState();
   }
 
@@ -109,6 +113,8 @@ class _GameplayerState extends State<Gameplayer> {
     cameracomponentscore.clear();
     globalvariablescore.clear();
     soundslistscore.clear();
+
+    theads2.hideBannerAd();
 
     accelerometerEvent.cancel();
     gyroscopeEvent.cancel();
@@ -150,7 +156,7 @@ class _GameplayerState extends State<Gameplayer> {
                           },
                           onPointerCancel: (event) {},
                           child: gv.widget),
-                      TheUIcomponents()
+                      TheUIcomponents(widget.isdebug)
                     ],
                   )
                 : Center(
@@ -211,6 +217,8 @@ class _GameplayerState extends State<Gameplayer> {
 }
 
 class TheUIcomponents extends StatefulWidget {
+  final bool isdebug;
+  TheUIcomponents(this.isdebug);
   @override
   _TheUIcomponentsState createState() => _TheUIcomponentsState();
 }
@@ -261,6 +269,22 @@ class _TheUIcomponentsState extends State<TheUIcomponents> {
             right: t.posright.isNaN ? null : t.posright,
             top: t.postop.isNaN ? null : t.postop,
             child: theuibutton(t));
+      }
+      if (t is Clsuiadbanner) {
+        // print("asdfasdfasdfdasf" + t.anchor);
+
+        theads2.anchor = t.anchor;
+        theads2.bannersize = t.bannersize;
+        if (t.bannerid != null) {
+          if (t.bannerid.length > 0) {
+            theads2.bannerid = t.bannerid;
+          }
+        }
+        if (getprojectsettingscore().admobapplicationid != null) {
+          if (getprojectsettingscore().admobapplicationid.length > 0) {
+            theads2.appid = getprojectsettingscore().admobapplicationid;
+          }
+        }
       }
 
       return Container();
