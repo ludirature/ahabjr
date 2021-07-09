@@ -539,6 +539,7 @@ class Clscompgameobject extends Clscomponent {
   String name;
   String isactive;
   String ischild;
+  int priority;
   double vsoffsetx = 0;
   double vsoffsety = 0;
   double vsscale = 0;
@@ -548,6 +549,7 @@ class Clscompgameobject extends Clscomponent {
       this.isactive,
       this.theid,
       this.ischild,
+      this.priority,
       this.vsoffsetx,
       this.vsoffsety,
       this.vsscale});
@@ -556,6 +558,7 @@ class Clscompgameobject extends Clscomponent {
       "name": this.name,
       "isactive": this.isactive,
       "ischild": this.ischild,
+      "priority": this.priority,
       "theid": this.theid,
       "vsoffsetx": this.vsoffsetx,
       "vsoffsety": this.vsoffsety,
@@ -571,6 +574,12 @@ class Clscompgameobject extends Clscomponent {
     double vsoffsety = json['vsoffsety'];
     double vsscale = json['vsscale'];
     String ischild = json['ischild'];
+    int priority = 0;
+    if (json['priority'] == null) {
+      priority = 0;
+    } else {
+      priority = json['priority'];
+    }
     int theid;
     if (json['theid'] == null) {
       // print("asdfasfasdfasdf");
@@ -578,6 +587,7 @@ class Clscompgameobject extends Clscomponent {
     } else {
       theid = json['theid'];
     }
+
     return Clscompgameobject(
         name: name,
         isactive: isactive,
@@ -585,6 +595,7 @@ class Clscompgameobject extends Clscomponent {
         vsoffsety: vsoffsety,
         vsscale: vsscale,
         theid: theid,
+        priority: priority,
         ischild: ischild);
   }
 }
@@ -3272,6 +3283,7 @@ class Clscompprojectsettings extends Clssettings {
   String startingscene;
   String icon;
   String playgroundid;
+  String backupid;
   bool opensource;
   String repositorylink;
   String optimization = "smooth";
@@ -3279,12 +3291,17 @@ class Clscompprojectsettings extends Clssettings {
   int appversion = 0;
   double gridspacing = 32;
   String admobapplicationid = "";
+  String splashtext = "M A D E  W I T H";
+  String splashimage = "Max2D Logo";
+  int splashbackground = Color(0xFF2A2E49).value;
+
   Clscompprojectsettings(
       {this.usinggyroscope = false,
       this.orientation,
       this.startingscene,
       this.packagename,
       this.projectname,
+      this.backupid,
       this.usingmicrophone = false,
       this.usingaccelerometer = false,
       this.version,
@@ -3296,6 +3313,9 @@ class Clscompprojectsettings extends Clssettings {
       this.appversion = 0,
       this.gridspacing = 32,
       this.admobapplicationid,
+      this.splashbackground,
+      this.splashimage = "Max2D Logo",
+      this.splashtext = "M A D E  W I T H",
       this.playgroundid = ""});
   Map<String, dynamic> toJson() {
     return {
@@ -3307,6 +3327,7 @@ class Clscompprojectsettings extends Clssettings {
       "projectname": this.projectname,
       "version": this.version,
       "orientation": this.orientation,
+      "backupid": this.backupid,
       "icon": this.icon,
       "gridspacing": this.gridspacing,
       "optimization": this.optimization,
@@ -3315,6 +3336,9 @@ class Clscompprojectsettings extends Clssettings {
       "repositorylink": this.repositorylink,
       "playgroundid": this.playgroundid,
       "admobapplicationid": this.admobapplicationid,
+      "splashbackground": this.splashbackground,
+      "splashtext": this.splashtext,
+      "splashimage": this.splashimage,
       "imagequality": this.imagequality,
     };
   }
@@ -3328,6 +3352,14 @@ class Clscompprojectsettings extends Clssettings {
         projectname = json['projectname'],
         version = json['version'],
         icon = json['icon'],
+        splashbackground = json['splashbackground'] == null
+            ? Color(0xFF2A2E49).value
+            : json['splashbackground'],
+        splashimage = json['splashimage'],
+        splashtext = json['splashtext'] == null
+            ? "M A D E  W I T H"
+            : json['splashtext'],
+        backupid = json['backupid'],
         gridspacing = json['gridspacing'] == null ? 8 : json['gridspacing'],
         repositorylink = json['repositorylink'],
         opensource = json['opensource'],

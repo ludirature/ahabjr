@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:expressions/expressions.dart';
 import 'package:flame/box2d/box2d_component.dart';
 import 'package:flame/box2d/viewport.dart' as v;
-import 'package:flame/components/component.dart';
-import 'package:flame/components/mixins/tapable.dart';
+// import 'package:flame/components/component.dart';
+// import 'package:flame/components/mixins/tapable.dart';
 
 import 'package:flutter/material.dart';
+// import 'package:mobilegameengine/gamecore/lib/globalvars.dart';
 // import 'package:mobilegameengine/gamecore/lib/compandactvariables.dart';
 
 import 'admobads2.dart';
@@ -1011,6 +1012,8 @@ class Actionsinitiator {
   void initiateactions4(int scriptindex,
       {Clsscriptitem t, Gameobject thegameobject, int goindex}) {
     if (t is Clsactloadscene) {
+      // gv.pauseEngine();
+      // return;
       if (t.scenename == null) return;
 
       actionsinitiator.isended = true;
@@ -1029,7 +1032,6 @@ class Actionsinitiator {
           // bComponent.bodies.remove(thet.thegameobject.theid);
 
         }
-
         // bComponent.bodies.forEach((key, val) {
 
         // });
@@ -1042,7 +1044,6 @@ class Actionsinitiator {
         refreshuicomponents();
         actionsinitiator.isended = false;
       });
-
       return;
     }
 
@@ -1395,11 +1396,17 @@ class Actionsinitiator {
         }
       }
     } else if (t is Clsactfollowobject) {
+      // print("asdfasdf");
       double x1 = thegameobject.body.position.x;
       double y1 = thegameobject.body.position.y;
+      // thegameobject.body.setAwake(true);
+      // thegameobject.refreshfollowobjects(false);
 
       thegameobject.followobjectindexs.forEach((key, value) {
-        if (key == scriptindex) {
+        // print(value.thegameobject.name.toString() +
+        //     "                 " +
+        //     scriptindex.toString());
+        if (value.thegameobject.name == t.objectname) {
           double x2 = value.body.position.x;
           double y2 = value.body.position.y;
 
@@ -1423,6 +1430,7 @@ class Actionsinitiator {
               speed = r;
             }
           }
+
           if (!t.speed.isNaN) {
             thegameobject.body.linearVelocity =
                 Vector2(movex * speed, movey * speed);
@@ -1467,6 +1475,7 @@ class Actionsinitiator {
       if (t.action == "show") {
         // if(uicomponentscore)
         if (!isbanneradshowing) {
+          print(theads2.anchor);
           isbanneradshowing = true;
           if (theads2.anchor == "top") {
             theads2.showBannerAd(true);
@@ -1967,6 +1976,10 @@ class Gameobject extends BodyComponent {
       Gameobject thegameobject2, String where, int thebodyindex) {
     // print(thegame)
     // if(isdestroyed) return;
+    // destroy();
+    // this.destroy();
+    // this.body = null;
+    // return;
     isdestroyed = true;
 
     // world.destroyBody(this.body);
@@ -1977,6 +1990,8 @@ class Gameobject extends BodyComponent {
     if (where == "bodies" && bodyindex >= gameobjectitemscore.length) {
       // actionsinitiator.bodies.removeAt(bodyindex);
     }
+    // bComponent.bodies
+    //     .removeWhere((key, value) => key == thegameobject2.bodyindex);
     if (where == "bcomponent" &&
         thegameobject2.bodyindex >= gameobjectitemscore.length) {
       // Future.delayed(Duration(seconds: 1),(){
@@ -2008,8 +2023,12 @@ class Gameobject extends BodyComponent {
 
       // print(bodyindex);
     }
+    // print("asdvcxvzxcvzxcvzxcv");
+    // refreshfollowobjects(false);
 
     destroy();
+    // this.body.destroyFixture(this.body.getFixtureList());
+    // this.box.remove(this);
   }
 
   @override
@@ -2019,18 +2038,24 @@ class Gameobject extends BodyComponent {
 
   @override
   void onDestroy() {
+    // this.box.remove(this);
+
     super.onDestroy();
   }
 
-  void onloaded() {
-    if (isdestroyed) return;
+  void refreshfollowobjects(bool isonload) {
     followobjectindexs.clear();
+
     for (int asdf = 0; asdf < thescript.components.length; asdf++) {
       Clsscriptitem t = thescript.components[asdf];
-      if (t is Clscompstep) {
-        stepindexs.add(asdf);
+      if (isonload) {
+        if (t is Clscompstep) {
+          stepindexs.add(asdf);
+        }
       }
+
       if (t is Clsactfollowobject) {
+        // print("asdfasdfasdf");
         // print(bComponent.bodies.length);
         for (int a = 0; a < bComponent.bodies.length; a++) {
           Gameobject thet = bComponent.bodies.values.elementAt(a);
@@ -2043,6 +2068,11 @@ class Gameobject extends BodyComponent {
         }
       }
     }
+  }
+
+  void onloaded() {
+    if (isdestroyed) return;
+    refreshfollowobjects(true);
 
     actioninitiator(eevents: Eevents.onobjectloaded);
     isloaded = true;
@@ -2300,9 +2330,12 @@ class Gameobject extends BodyComponent {
           -this.body.position.y +
               (gameobjectitemscore[goindex].gettransform().y) * viewport.scale +
               MediaQuery.of(context).size.height / 2);
-
-      if (getprojectsettingscore().appversion >= 11) {
-        canvas.rotate(transformprop.angle);
+      if (getprojectsettingscore() != null) {
+        if (getprojectsettingscore().appversion >= 11) {
+          canvas.rotate(transformprop.angle);
+        } else {
+          canvas.rotate(gameobjectitemscore[goindex].gettransform().angle);
+        }
       } else {
         canvas.rotate(gameobjectitemscore[goindex].gettransform().angle);
       }
@@ -2583,7 +2616,7 @@ class BComponent extends Box2DComponent {
     isbanneradshowing = false;
     cameracontroller = cameragetcameracontrollercore();
     // print("asdfasdfasdfasdfasdfasdfasdf");
-    objectcounters = 0;
+    objectcounters = 10000;
     currentcamerasettings = Cameraproperties(0, 0, 1);
     actionsinitiator = Actionsinitiator(
         box2d: this, context: this.context, world: world, viewport: viewport);
@@ -2595,9 +2628,12 @@ class BComponent extends Box2DComponent {
           gameobjectitemscore[a].getgameobject().name,
           isdebug: isdebug);
 
+      temp.setpriority(gameobjectitemscore[a].getgameobject().priority);
+
       bodies.addAll({gameobjectitemscore[a].getgameobject().theid: temp});
 
       add(temp);
+
       objectcounters++;
 
       // actionsinitiator.bodies = bodies;

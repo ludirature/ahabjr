@@ -30,7 +30,7 @@ dependencies:
   font_awesome_flutter: ^8.8.1
   firebase_admob: ^0.9.3+4
   flame:
-    path: plugins/flame/
+    path: plugins/flame2/
   control_pad:
     path: plugins/control_pad/
   flutter:

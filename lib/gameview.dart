@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter/gestures.dart';
 
+// import 'flame2/lib/effects/effects.dart';
+// import 'package:flame/effects/move_effect.dart';
+import 'package:flame/components/component.dart';
 import 'actions.dart';
 import 'compandactvariables.dart';
 import 'globalvars.dart';
@@ -15,12 +18,14 @@ class Gameview extends BaseGame {
   BuildContext context;
   bool isdebug;
   bool recordFps() => true;
+
   Gameview(this.context, {this.isdebug = false}) {
     initialize();
     bComponent = BComponent(context, isdebug: isdebug);
 
     if (bComponent == null) return;
     bComponent.initializeWorld();
+
     uicomponents.forEach((f) {
       if (f is Clsuijoystickdirectional) {
         bComponent.onjoystickdirectionchanged(
@@ -28,12 +33,16 @@ class Gameview extends BaseGame {
       }
     });
 
+    // Future.delayed(Duration(seconds: 5), () {
+    //   bComponent = null;
+    // });
+
     if (isdebug) {
       //
     }
 
-    
-    
+    // MoveEffect(destination: null, speed: null)
+
     gameisdebug = isdebug;
   }
 
@@ -53,6 +62,9 @@ class Gameview extends BaseGame {
     // return;
     double themargin = 20;
     if (bComponent == null) return;
+    if (cameragetcameracontrollercore() == null ||
+        getprojectsettingscore() == null) return;
+
     canvas.drawRect(
         Rect.fromLTWH(0, 0, MediaQuery.of(context).size.width,
             MediaQuery.of(context).size.height),

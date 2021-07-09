@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import 'package:path_provider/path_provider.dart';
 
 import 'globalvars.dart';
@@ -19,28 +20,32 @@ class Ads2 {
   bool ishidden = false;
   bool isnaaybanner = false;
   bool isdebug = false;
-  bool isbannershowing = false;
+  // bool isbannershowing = false;
 
   BuildContext acontext;
 
   String anchor = "";
   String bannersize = "";
 
-  // String appid = FirebaseAdMob.testAppId;
+  String appid = FirebaseAdMob.testAppId;
   String rewardid = RewardedVideoAd.testAdUnitId;
-  // String bannerid = BannerAd.testAdUnitId;
-  // String interstitialid = InterstitialAd.testAdUnitId;
+  String bannerid = BannerAd.testAdUnitId;
+  String interstitialid = InterstitialAd.testAdUnitId;
 
   bool ismanaagvideo = false;
 
-  String appid = "ca-app-pub-3003521480953457~5917148920";
+  // String appid = "ca-app-pub-1547741271935331~9899365465";
   // String rewardid = "ca-app-pub-3003521480953457/5736903683";
-  String bannerid = "ca-app-pub-3003521480953457/2421413587";
-  String interstitialid = "ca-app-pub-3003521480953457/6083796117";
+  // String bannerid = "ca-app-pub-1547741271935331/2020875442";
+  // String interstitialid = "ca-app-pub-3003521480953457/6083796117";
 
   Future initialize(bool visdebug) async {
     isdebug = visdebug;
     if (visdebug) {
+      await FirebaseAdMob.instance.initialize(
+        appId: FirebaseAdMob.testAppId,
+      );
+    } else if (isworkspace) {
       await FirebaseAdMob.instance.initialize(
         appId: FirebaseAdMob.testAppId,
       );
@@ -98,7 +103,7 @@ class Ads2 {
   BannerAd _createBannerAd() {
     // print("asdfasdfasdf");
     return BannerAd(
-      adUnitId: isdebug ? BannerAd.testAdUnitId : bannerid,
+      adUnitId: isdebug || isworkspace ? BannerAd.testAdUnitId : bannerid,
       // adUnitId: "ca-app-pub-3003521480953457/2421413587",
 
       size: bannersize == "banner"
@@ -138,7 +143,7 @@ class Ads2 {
   BannerAd _createBannerAd2() {
     // print("asdfasdfasdf");
     return BannerAd(
-      adUnitId: isdebug ? BannerAd.testAdUnitId : bannerid,
+      adUnitId: isdebug || isworkspace ? BannerAd.testAdUnitId : bannerid,
       // adUnitId: "ca-app-pub-3003521480953457/2421413587",
 
       size: bannersize == "banner"
@@ -195,10 +200,10 @@ class Ads2 {
   }
 
   void showBannerAd(bool istop) {
-    isbannershowing = true;
+    // isbannershowing = true;
     // if (ismanaagvideo && istop == false) return;
     // if (isbannershowing) return;
-    print("showbanner" + "        " + theads2.bannerid);
+    // print("showbanner" + "        " + theads2.bannerid);
 
     if (_bannerAd == null)
       _bannerAd = istop ? _createBannerAd() : _createBannerAd2();
@@ -208,7 +213,7 @@ class Ads2 {
   }
 
   Future hideBannerAd() async {
-    isbannershowing = false;
+    // isbannershowing = false;
     print("hide" + "        " + theads2.appid);
     if (_bannerAd != null) {
       ishidden = true;

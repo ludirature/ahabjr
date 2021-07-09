@@ -38,6 +38,7 @@ ui.Image noimage;
 
 bool isdefloaded = false;
 bool gameisdebug = false;
+bool isworkspace = false;
 
 Gameview gv;
 
@@ -249,7 +250,7 @@ Future loadprojectsettings() async {
 
 Future loadprojectcore2(String scenename) async {
   currentscenecore = scenename;
-  print(currentscenecore);
+  // print(currentscenecore);
   File file = File(projpathcore + "/scenes/" + scenename + ".mobilegameengine");
 
   String contents = await file.readAsString();

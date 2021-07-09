@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:control_pad/control_pad.dart';
 import 'package:draggable_fab/draggable_fab.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:mobilegameengine/gamecore/lib/compandactvariables.dart';
 
 import 'admobads2.dart';
 import 'compandactvariables.dart';
@@ -21,6 +23,8 @@ import 'dart:math' as math;
 
 import 'package:sensors/sensors.dart';
 
+import 'dart:ui' as ui;
+
 BuildContext playercontext;
 Offset listeneroffset = Offset(0, 0);
 
@@ -28,9 +32,12 @@ class Gameplayer extends StatefulWidget {
   final String currentscene;
   final bool isdebug;
   final bool isplayground;
+  final bool isworkspace2;
 
   Gameplayer(this.currentscene,
-      {this.isdebug = false, this.isplayground = false});
+      {this.isdebug = false,
+      this.isplayground = false,
+      this.isworkspace2 = false});
   @override
   _GameplayerState createState() => _GameplayerState();
 }
@@ -54,15 +61,57 @@ class _GameplayerState extends State<Gameplayer> {
 
   StreamSubscription accelerometerEvent;
   StreamSubscription gyroscopeEvent;
+  int splashbackground = Color(0xFF2A2E49).value;
+  String splashtext = "M A D E  W I T H";
+
+  bool ismanaprojecsettingsloaded = false;
+
+  Image splashimage = Image.asset("assets/logo.png");
+  String splashimagepath = imagespath;
+
+  void loadsplashimage() {
+    if (getprojectsettingscore().splashimage == null) {
+      return;
+    }
+    if (getprojectsettingscore().splashimage == "Max2D Logo") {
+      return;
+    }
+    File imagepath = File(imagespath + getprojectsettingscore().splashimage);
+
+    splashimage = Image.file(imagepath);
+
+    // ImageStream _imageStream;
+    // ImageProvider temp = Image.file(imagepath).image;
+
+    // _imageStream = temp.resolve(createLocalImageConfiguration(context));
+    // // loadedimages.addAll({path.basename(thepath): noimage});
+    // _imageStream.addListener(
+    //     new ImageStreamListener((ImageInfo info, bool synchronousCall) {
+    //   splashimage = info.image;
+    //   // loadedimages.update(path.basename(thepath), (value) => info.image);
+    //   // print(info.image);
+    // }));
+  }
+
   @override
   void initState() {
     isprojectloaded = false;
+    isworkspace = widget.isworkspace2;
 
     loadprojectsettings().then((onValue) async {
+      loadsplashimage();
+      ismanaprojecsettingsloaded = true;
+      setState(() {});
       if (getprojectsettingscore().orientation == "portrait") {
         Flame.util.setPortrait();
       } else if (getprojectsettingscore().orientation == "landscape") {
         Flame.util.setLandscape();
+      }
+      if (getprojectsettingscore().splashbackground != null) {
+        // print(splashbackground);
+        splashbackground = getprojectsettingscore().splashbackground;
+        splashtext = getprojectsettingscore().splashtext;
+        // print(splashbackground);
       }
       await theads2.initialize(widget.isdebug);
       loadprojectcore(widget.isplayground
@@ -71,8 +120,8 @@ class _GameplayerState extends State<Gameplayer> {
           .then((onValue) async {
         await loadimagesfromfile(context);
 
-        Future.delayed(Duration(milliseconds: widget.isplayground ? 2000 : 500),
-            () {
+        Future.delayed(
+            Duration(milliseconds: widget.isplayground ? 2000 : 1000), () {
           isprojectloaded = true;
           setState(() {});
         });
@@ -124,6 +173,9 @@ class _GameplayerState extends State<Gameplayer> {
 
   @override
   Widget build(BuildContext context) {
+    if (!ismanaprojecsettingsloaded) {
+      return Container();
+    }
     playercontext = context;
     SystemChrome.setEnabledSystemUIOverlays([]);
     if (isprojectloaded) {
@@ -131,7 +183,7 @@ class _GameplayerState extends State<Gameplayer> {
     }
 
     return Scaffold(
-      backgroundColor: Color(0xFF2A2E49),
+      backgroundColor: Color(splashbackground),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
@@ -156,7 +208,7 @@ class _GameplayerState extends State<Gameplayer> {
                           },
                           onPointerCancel: (event) {},
                           child: gv.widget),
-                      TheUIcomponents(widget.isdebug)
+                      TheUIcomponents()
                     ],
                   )
                 : Center(
@@ -165,17 +217,14 @@ class _GameplayerState extends State<Gameplayer> {
                       children: [
                         Spacer(),
                         Text(
-                          "M A D E  W I T H",
+                          splashtext,
                           style: TextStyle(fontSize: 12, color: Colors.white),
                         ),
-                        Container(
-                            width: 100,
-                            height: 100,
-                            child: Image.asset("assets/logo.png")),
+                        Container(width: 100, height: 100, child: splashimage),
                         Spacer(),
                         //
                         Text(
-                          "Loading assets...",
+                          "Loading resources...",
                           style: TextStyle(fontSize: 12, color: Colors.white),
                         ),
                         Container(
@@ -217,8 +266,8 @@ class _GameplayerState extends State<Gameplayer> {
 }
 
 class TheUIcomponents extends StatefulWidget {
-  final bool isdebug;
-  TheUIcomponents(this.isdebug);
+  // final bool isdebug;
+  TheUIcomponents();
   @override
   _TheUIcomponentsState createState() => _TheUIcomponentsState();
 }
@@ -235,6 +284,7 @@ class _TheUIcomponentsState extends State<TheUIcomponents> {
 
   @override
   Widget build(BuildContext context) {
+    print(uicomponentscore.length);
     return Stack(
         children: List.generate(uicomponentscore.length, (index) {
       Clsuicomponent t = uicomponentscore[index];
@@ -261,6 +311,7 @@ class _TheUIcomponentsState extends State<TheUIcomponents> {
           ),
         );
       }
+
       if (t is Clsuibutton) {
         // buttonlisteners.add(t);
         return Positioned(
@@ -271,8 +322,6 @@ class _TheUIcomponentsState extends State<TheUIcomponents> {
             child: theuibutton(t));
       }
       if (t is Clsuiadbanner) {
-        // print("asdfasdfasdfdasf" + t.anchor);
-
         theads2.anchor = t.anchor;
         theads2.bannersize = t.bannersize;
         if (t.bannerid != null) {
