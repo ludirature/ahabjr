@@ -1,13 +1,13 @@
 # This is a generated file; do not edit or check into version control.
-audioplayers=/home/mikeytronix/flutter/.pub-cache/hosted/pub.dartlang.org/audioplayers-0.17.4/
-firebase_admob=/home/mikeytronix/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_admob-0.9.3+4/
-firebase_core=/home/mikeytronix/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core-0.4.5/
-firebase_core_web=/home/mikeytronix/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core_web-0.1.1+2/
-flutter_archive=/home/mikeytronix/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_archive-1.0.2/
-mic_stream=/home/mikeytronix/flutter/.pub-cache/hosted/pub.dartlang.org/mic_stream-0.2.1/
-path_provider=/home/mikeytronix/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-1.6.28/
-path_provider_linux=/home/mikeytronix/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_linux-0.0.1+2/
-path_provider_macos=/home/mikeytronix/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_macos-0.0.4+3/
-path_provider_windows=/home/mikeytronix/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_windows-0.0.4+3/
-permission=/home/mikeytronix/flutter/.pub-cache/hosted/pub.dartlang.org/permission-0.1.7/
-sensors=/home/mikeytronix/flutter/.pub-cache/hosted/pub.dartlang.org/sensors-0.4.2+2/
+audioplayers=/root/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/audioplayers-0.15.1/
+firebase_admob=/root/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_admob-0.9.3+4/
+firebase_core=/root/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core-0.4.5/
+firebase_core_web=/root/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core_web-0.1.1+2/
+flutter_archive=/root/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_archive-1.0.2/
+mic_stream=/root/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/mic_stream-0.2.1/
+path_provider=/root/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-1.6.28/
+path_provider_linux=/root/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_linux-0.0.1+2/
+path_provider_macos=/root/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_macos-0.0.4+3/
+path_provider_windows=/root/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_windows-0.0.4+3/
+permission=/root/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/permission-0.1.7/
+sensors=/root/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/sensors-0.4.2+2/
